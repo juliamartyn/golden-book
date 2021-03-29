@@ -99,7 +99,8 @@ public class OrderServiceImpl implements OrderService {
         Integer statusId = orderStatusRepository.findByName("ORDERED").getId();
         orderRepository.updateStatus(orderId, statusId);
 
-        orderRepository.findOrderById(orderId).getBooks().forEach(book -> bookRepository.updateQuantity(book.getId(), book.getQuantity() - 1));
+        orderRepository.findOrderById(orderId).getBooks()
+                .forEach(book -> bookRepository.updateQuantity(book.getId(), book.getQuantity() - 1));
     }
 
     private Order createOrderForCurrentUser(Long currentUserId) {

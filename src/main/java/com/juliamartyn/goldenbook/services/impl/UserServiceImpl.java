@@ -69,6 +69,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void updateDeliveryAddress(Integer id, String address) {
+        if(userRepository.updateDeliveryAddress(id, address) == 0){
+            throw new NotFoundException("User with id " + id + " not found");
+        }
+    }
+
+    @Override
     public List<UserResponse> findAll() {
         return userRepository.findAll().stream()
                 .map(userConverter::of)

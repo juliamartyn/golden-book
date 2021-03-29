@@ -119,7 +119,7 @@ class OrderServiceImplTest {
         return OrderResponse.builder()
                 .id(1)
                 .status("status")
-                .buyer(new UserResponse(1L, "username", "email", "phone", false, "ROLE_CUSTOMER"))
+                .buyer(new UserResponse(1L, "username", "email", "phone", "address", false, "ROLE_CUSTOMER"))
                 .totalPrice(BigDecimal.valueOf(100))
                 .books(List.of(new BookResponse(1, "title", "author", "description",
                                                 "category", BigDecimal.valueOf(100), 1, "image".getBytes())))

@@ -1,6 +1,7 @@
 package com.juliamartyn.goldenbook.controllers;
 
 import com.juliamartyn.goldenbook.controllers.request.CreateUserRequest;
+import com.juliamartyn.goldenbook.controllers.request.DeliveryAddressRequest;
 import com.juliamartyn.goldenbook.controllers.request.DisableUserRequest;
 import com.juliamartyn.goldenbook.controllers.request.UsernameUpdateRequest;
 import com.juliamartyn.goldenbook.controllers.response.UserResponse;
@@ -41,7 +42,7 @@ public class UserController {
         return new ResponseEntity<>(userService.findAll(), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') OR hasAuthority('ROLE_CUSTOMER')")
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> findUserById(@PathVariable Long id) {
         return new ResponseEntity<>(userService.findUserById(id), HttpStatus.OK);
@@ -58,6 +59,13 @@ public class UserController {
     @PatchMapping("/{id}/username")
     public ResponseEntity<Void> updateUsername(@PathVariable Integer id, @RequestBody UsernameUpdateRequest request) {
         userService.updateUsername(id, request.getUsername());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
+    @PatchMapping("/{id}/delivery-address")
+    public ResponseEntity<Void> updateDeliveryAddress(@PathVariable Integer id, @RequestBody DeliveryAddressRequest request) {
+        userService.updateDeliveryAddress(id, request.getDeliveryAddress());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

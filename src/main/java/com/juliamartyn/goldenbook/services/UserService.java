@@ -11,6 +11,7 @@ public interface UserService {
     UserResponse register(RegisterUserRequest registerUserRequest);
     void updateDisabled(Integer id, Boolean disabled);
     void updateUsername(Integer id, String username);
+    void updateDeliveryAddress(Integer id, String address);
     List<UserResponse> findAll();
     UserResponse findUserById(Long id);
 }

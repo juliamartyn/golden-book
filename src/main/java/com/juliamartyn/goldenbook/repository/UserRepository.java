@@ -25,4 +25,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Transactional
     @Query(value = "update users set users.username = :username where users.id = :id", nativeQuery = true)
     int updateUsername(Integer id, String username);
+
+
+    @Modifying
+    @Transactional
+    @Query(value = "update users set users.delivery_address = :address where users.id = :id", nativeQuery = true)
+    int updateDeliveryAddress(Integer id, String address);
 }

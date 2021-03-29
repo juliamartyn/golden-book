@@ -34,6 +34,8 @@ public class User {
 
     private String phone;
 
+    private String deliveryAddress;
+
     @Builder.Default
     private Boolean disabled = false;
 
