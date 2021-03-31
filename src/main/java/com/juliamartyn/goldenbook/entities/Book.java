@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -34,6 +35,8 @@ public class Book {
     private BigDecimal price;
 
     private Integer quantity;
+
+    private LocalDateTime startSaleDate;
 
     @ManyToOne
     @JoinColumn(name = "category_id",  referencedColumnName = "id")
