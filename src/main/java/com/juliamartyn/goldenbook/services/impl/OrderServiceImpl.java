@@ -8,12 +8,16 @@ import com.juliamartyn.goldenbook.repository.BookRepository;
 import com.juliamartyn.goldenbook.repository.OrderRepository;
 import com.juliamartyn.goldenbook.repository.OrderStatusRepository;
 import com.juliamartyn.goldenbook.repository.UserRepository;
+import com.juliamartyn.goldenbook.services.MailSender;
 import com.juliamartyn.goldenbook.services.OrderService;
 import com.juliamartyn.goldenbook.services.converters.OrderConverter;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,13 +28,16 @@ public class OrderServiceImpl implements OrderService {
     private final BookRepository bookRepository;
     private final OrderStatusRepository orderStatusRepository;
     private final UserRepository userRepository;
+    private final MailSender mailSender;
 
-    public OrderServiceImpl(OrderRepository orderRepository, OrderConverter orderConverter, BookRepository bookRepository, OrderStatusRepository orderStatusRepository, UserRepository userRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository, OrderConverter orderConverter, BookRepository bookRepository,
+                            OrderStatusRepository orderStatusRepository, UserRepository userRepository, MailSender mailSender) {
         this.orderRepository = orderRepository;
         this.orderConverter = orderConverter;
         this.bookRepository = bookRepository;
         this.orderStatusRepository = orderStatusRepository;
         this.userRepository = userRepository;
+        this.mailSender = mailSender;
     }
 
     @Override
@@ -57,11 +64,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void updateStatus(Integer id, String status) {
+    public void updateStatus(Integer id, String status) throws MessagingException {
         Integer statusId = orderStatusRepository.findByName(status).getId();
         if(orderRepository.updateStatus(id, statusId) == 0){
             throw new NotFoundException("Order with id " + id + "not found");
         }
+
+        sendUpdateStatusEmail(id);
     }
 
     @Override
@@ -95,12 +104,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void confirmOrder(Integer orderId) {
+    public void confirmOrder(Integer orderId) throws MessagingException {
         Integer statusId = orderStatusRepository.findByName("ORDERED").getId();
         orderRepository.updateStatus(orderId, statusId);
 
         orderRepository.findOrderById(orderId).getBooks()
                 .forEach(book -> bookRepository.updateQuantity(book.getId(), book.getQuantity() - 1));
+
+        sendUpdateStatusEmail(orderId);
     }
 
     private Order createOrderForCurrentUser(Long currentUserId) {
@@ -109,5 +120,17 @@ public class OrderServiceImpl implements OrderService {
         newOrder.setBuyer(userRepository.findUserById(currentUserId));
 
         return orderRepository.save(newOrder);
+    }
+
+    private void sendUpdateStatusEmail(Integer orderId) throws MessagingException {
+        Order order = orderRepository.findOrderById(orderId);
+
+        Map<String, Object> mailContext = new HashMap<>();
+        mailContext.put("orderId", orderId);
+        mailContext.put("status", order.getStatus().getName());
+        mailContext.put("username", order.getBuyer().getUsername());
+        mailContext.put("template", "order-status-temp");
+
+        mailSender.sendEmail(order.getBuyer().getEmail(), "GoldenBook order", mailContext);
     }
 }

@@ -12,6 +12,7 @@ import com.juliamartyn.goldenbook.repository.BookRepository;
 import com.juliamartyn.goldenbook.repository.OrderRepository;
 import com.juliamartyn.goldenbook.repository.OrderStatusRepository;
 import com.juliamartyn.goldenbook.repository.UserRepository;
+import com.juliamartyn.goldenbook.services.MailSender;
 import com.juliamartyn.goldenbook.services.converters.OrderConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.mail.MessagingException;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -43,13 +45,15 @@ class OrderServiceImplTest {
     private OrderStatusRepository mockOrderStatusRepository;
     @Mock
     private UserRepository mockUserRepository;
+    @Mock
+    private MailSender mailSender;
 
     private OrderServiceImpl orderServiceImplUnderTest;
 
     @BeforeEach
     void setUp() {
         orderServiceImplUnderTest = new OrderServiceImpl(mockOrderRepository, mockOrderConverter, mockBookRepository,
-                                                            mockOrderStatusRepository, mockUserRepository);
+                                                            mockOrderStatusRepository, mockUserRepository, mailSender);
     }
 
     @Test
@@ -80,7 +84,7 @@ class OrderServiceImplTest {
     }
 
     @Test
-    void testConfirmOrder() {
+    void testConfirmOrder() throws MessagingException {
         final OrderStatus orderStatus = OrderStatus.builder().id(1).name("NAME").build();
 
         when(mockOrderStatusRepository.findByName("ORDERED")).thenReturn(orderStatus);

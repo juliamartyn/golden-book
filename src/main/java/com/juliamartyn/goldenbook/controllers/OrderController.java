@@ -4,7 +4,6 @@ import com.juliamartyn.goldenbook.controllers.request.OrderStatusRequest;
 import com.juliamartyn.goldenbook.controllers.response.OrderResponse;
 import com.juliamartyn.goldenbook.security.services.UserPrinciple;
 import com.juliamartyn.goldenbook.services.OrderService;
-import com.juliamartyn.goldenbook.services.converters.OrderConverter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.mail.MessagingException;
 import java.util.List;
 
 @RestController
@@ -58,7 +58,7 @@ public class OrderController {
 
     @PreAuthorize("hasAuthority('ROLE_SELLER') OR hasAuthority('ROLE_ADMIN')")
     @PatchMapping("/{id}/status")
-    public ResponseEntity<Void> updateStatus(@PathVariable Integer id, @RequestBody OrderStatusRequest request) {
+    public ResponseEntity<Void> updateStatus(@PathVariable Integer id, @RequestBody OrderStatusRequest request) throws MessagingException {
         orderService.updateStatus(id, request.getStatus());
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -72,7 +72,7 @@ public class OrderController {
 
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     @PatchMapping("/{id}/confirm")
-    public ResponseEntity<Void> confirmOrder(@PathVariable Integer id) {
+    public ResponseEntity<Void> confirmOrder(@PathVariable Integer id) throws MessagingException {
         orderService.confirmOrder(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
