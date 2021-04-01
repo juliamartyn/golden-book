@@ -23,6 +23,9 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     @Query(value = "select * from orders where status_id != 1 and buyer_id = :id", nativeQuery = true)
     List<Order> findAllConfirmedOrdersByBuyerId(Long id);
 
+    @Query(value = "select * from orders where status_id = 5 and buyer_id = :id", nativeQuery = true)
+    List<Order> findPreOrdersByBuyerId(Long id);
+
     Order findOrderById(Integer id);
 
     @Modifying

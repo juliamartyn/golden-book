@@ -27,14 +27,14 @@ public class MailSenderImpl  implements MailSender {
     private String username;
 
     @Override
-    public void sendEmail(String emailTo, String subject, Map<String, Object> mailContext) throws MessagingException {
+    public void sendEmail(String emailTo, String subject, MailType mailType, Map<String, Object> mailContext) throws MessagingException {
         MimeMessage mailMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mailMessage, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED);
 
         Context context = new Context();
         context.setVariables(mailContext);
 
-        String process = templateEngine.process(mailContext.get("template").toString(), context);
+        String process = templateEngine.process(mailType.getTemplate(), context);
 
         helper.setSubject(subject);
         helper.setText(process, true);
@@ -42,6 +42,21 @@ public class MailSenderImpl  implements MailSender {
         helper.setFrom(username);
 
         mailSender.send(mailMessage);
+    }
+
+    public enum MailType{
+        ORDER_STATUS_UPDATE("order-status-temp"),
+        ORDER_CONFIRMED("order-confirm-temp");
+
+        private String template;
+
+        MailType(String template) {
+            this.template = template;
+        }
+
+        public String getTemplate() {
+            return template;
+        }
     }
 
 }

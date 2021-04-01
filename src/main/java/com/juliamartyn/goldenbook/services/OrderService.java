@@ -14,4 +14,8 @@ public interface OrderService {
     List<OrderResponse> findOrdersByBuyerId(Long buyerId);
     void deleteBookFromCart(Integer orderId, Integer bookId);
     void confirmOrder(Integer orderId) throws MessagingException;
+    void preOrder(Integer bookId, Long currentUserId);
+    List<OrderResponse> findPreOrdersByBuyerId(Long id);
+    void cancelPreOrder(Integer orderId);
+    void confirmPreOrder(Integer orderId) throws MessagingException;
 }

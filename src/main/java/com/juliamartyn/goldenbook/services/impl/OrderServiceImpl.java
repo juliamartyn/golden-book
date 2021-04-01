@@ -70,7 +70,7 @@ public class OrderServiceImpl implements OrderService {
             throw new NotFoundException("Order with id " + id + "not found");
         }
 
-        sendUpdateStatusEmail(id);
+        sendOrderEmail(id, MailSenderImpl.MailType.ORDER_STATUS_UPDATE);
     }
 
     @Override
@@ -105,13 +105,49 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void confirmOrder(Integer orderId) throws MessagingException {
-        Integer statusId = orderStatusRepository.findByName("ORDERED").getId();
-        orderRepository.updateStatus(orderId, statusId);
+        changeOrderStatusToORDERED(orderId);
 
         orderRepository.findOrderById(orderId).getBooks()
                 .forEach(book -> bookRepository.updateQuantity(book.getId(), book.getQuantity() - 1));
 
-        sendUpdateStatusEmail(orderId);
+        sendOrderEmail(orderId, MailSenderImpl.MailType.ORDER_CONFIRMED);
+    }
+
+    @Override
+    public void preOrder(Integer bookId, Long currentUserId) {
+        Order preOrder = new Order();
+        preOrder.setStatus(orderStatusRepository.findByName("PREORDERED"));
+        preOrder.setBuyer(userRepository.findUserById(currentUserId));
+
+        Book book = bookRepository.findBookById(bookId);
+        preOrder.setBooks(List.of(book));
+        preOrder.setTotalPrice(book.getPrice());
+        bookRepository.updateQuantity(bookId, book.getQuantity() - 1);
+
+        orderRepository.save(preOrder);
+    }
+
+    @Override
+    public List<OrderResponse> findPreOrdersByBuyerId(Long buyerId) {
+        return orderRepository.findPreOrdersByBuyerId(buyerId).stream()
+                .map(orderConverter::of)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void cancelPreOrder(Integer orderId) {
+        Order order = orderRepository.findOrderById(orderId);
+        if(order.getStatus().getName().equals("PREORDERED")) {
+            order.getBooks().forEach(book -> bookRepository.updateQuantity(book.getId(), book.getQuantity() + 1));
+            orderRepository.deleteById(orderId);
+        }
+    }
+
+    @Override
+    public void confirmPreOrder(Integer orderId) throws MessagingException {
+        changeOrderStatusToORDERED(orderId);
+
+        sendOrderEmail(orderId, MailSenderImpl.MailType.ORDER_CONFIRMED);
     }
 
     private Order createOrderForCurrentUser(Long currentUserId) {
@@ -122,15 +158,19 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.save(newOrder);
     }
 
-    private void sendUpdateStatusEmail(Integer orderId) throws MessagingException {
+    private void changeOrderStatusToORDERED(Integer orderId) {
+        Integer statusId = orderStatusRepository.findByName("ORDERED").getId();
+        orderRepository.updateStatus(orderId, statusId);
+    }
+
+    private void sendOrderEmail(Integer orderId, MailSenderImpl.MailType mailType) throws MessagingException {
         Order order = orderRepository.findOrderById(orderId);
 
         Map<String, Object> mailContext = new HashMap<>();
         mailContext.put("orderId", orderId);
         mailContext.put("status", order.getStatus().getName());
         mailContext.put("username", order.getBuyer().getUsername());
-        mailContext.put("template", "order-status-temp");
 
-        mailSender.sendEmail(order.getBuyer().getEmail(), "GoldenBook order", mailContext);
+        mailSender.sendEmail(order.getBuyer().getEmail(), "GoldenBook order", mailType, mailContext);
     }
 }
