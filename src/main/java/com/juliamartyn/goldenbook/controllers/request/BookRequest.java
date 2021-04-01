@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -20,5 +20,5 @@ public class BookRequest {
     private String category;
     private BigDecimal price;
     private Integer quantity;
-    private LocalDateTime startSaleDate;
+    private LocalDate startSaleDate;
 }
