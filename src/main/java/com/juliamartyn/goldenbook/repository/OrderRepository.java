@@ -38,4 +38,11 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     @Query(value = "update orders o set o.total_price = :price where o.id = :id", nativeQuery = true)
     int updateTotalPrice(Integer id, BigDecimal price);
 
+
+    @Query(value = "select * from orders " +
+            "join orders_books on orders.id = orders_books.order_id " +
+            "join books on orders_books.book_id = books.id " +
+            "where orders.status_id = 5 and books.start_sale_date = CURDATE()", nativeQuery = true)
+    List<Order> findAllPreOrdersWithStartSellingTodayBooks();
+
 }

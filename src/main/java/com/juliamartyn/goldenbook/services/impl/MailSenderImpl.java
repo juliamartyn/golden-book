@@ -46,7 +46,8 @@ public class MailSenderImpl  implements MailSender {
 
     public enum MailType{
         ORDER_STATUS_UPDATE("order-status-temp"),
-        ORDER_CONFIRMED("order-confirm-temp");
+        ORDER_CONFIRMED("order-confirm-temp"),
+        BOOK_AVAILABLE("book-available-temp");
 
         private String template;
 

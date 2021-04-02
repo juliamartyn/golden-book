@@ -48,7 +48,7 @@ public class Order {
     @JoinColumn(name = "buyer_id",  referencedColumnName = "id")
     private User buyer;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "orders_books",
             joinColumns = @JoinColumn(name = "order_id"),
             inverseJoinColumns = @JoinColumn(name = "book_id"))
