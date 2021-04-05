@@ -11,9 +11,14 @@ import com.juliamartyn.goldenbook.repository.UserRepository;
 import com.juliamartyn.goldenbook.services.MailSender;
 import com.juliamartyn.goldenbook.services.OrderService;
 import com.juliamartyn.goldenbook.services.converters.OrderConverter;
+import com.juliamartyn.goldenbook.utils.PdfGenerator;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,21 +28,26 @@ import java.util.stream.Collectors;
 @Service
 public class OrderServiceImpl implements OrderService {
 
+    @Value("${INVOICE_REPOSITORY}")
+    private String invoiceRepository;
+
     private final OrderRepository orderRepository;
     private final OrderConverter orderConverter;
     private final BookRepository bookRepository;
     private final OrderStatusRepository orderStatusRepository;
     private final UserRepository userRepository;
     private final MailSender mailSender;
+    private final PdfGenerator pdfGenerator;
 
     public OrderServiceImpl(OrderRepository orderRepository, OrderConverter orderConverter, BookRepository bookRepository,
-                            OrderStatusRepository orderStatusRepository, UserRepository userRepository, MailSender mailSender) {
+                            OrderStatusRepository orderStatusRepository, UserRepository userRepository, MailSender mailSender, PdfGenerator pdfGenerator) {
         this.orderRepository = orderRepository;
         this.orderConverter = orderConverter;
         this.bookRepository = bookRepository;
         this.orderStatusRepository = orderStatusRepository;
         this.userRepository = userRepository;
         this.mailSender = mailSender;
+        this.pdfGenerator = pdfGenerator;
     }
 
     @Override
@@ -70,7 +80,7 @@ public class OrderServiceImpl implements OrderService {
             throw new NotFoundException("Order with id " + id + "not found");
         }
 
-        sendOrderEmail(id, MailSenderImpl.MailType.ORDER_STATUS_UPDATE);
+        sendOrderStatusUpdatedEmail(id);
     }
 
     @Override
@@ -104,13 +114,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void confirmOrder(Integer orderId) throws MessagingException {
+    public void confirmOrder(Integer orderId) throws MessagingException, FileNotFoundException, JRException {
         changeOrderStatusToORDERED(orderId);
 
         orderRepository.findOrderById(orderId).getBooks()
                 .forEach(book -> bookRepository.updateQuantity(book.getId(), book.getQuantity() - 1));
 
-        sendOrderEmail(orderId, MailSenderImpl.MailType.ORDER_CONFIRMED);
+        sendOrderConfirmationEmail(orderId, generateInvoice(orderId));
     }
 
     @Override
@@ -144,10 +154,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void confirmPreOrder(Integer orderId) throws MessagingException {
+    public void confirmPreOrder(Integer orderId) throws MessagingException, FileNotFoundException, JRException {
         changeOrderStatusToORDERED(orderId);
 
-        sendOrderEmail(orderId, MailSenderImpl.MailType.ORDER_CONFIRMED);
+        sendOrderConfirmationEmail(orderId, generateInvoice(orderId));
     }
 
     private Order createOrderForCurrentUser(Long currentUserId) {
@@ -163,7 +173,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.updateStatus(orderId, statusId);
     }
 
-    private void sendOrderEmail(Integer orderId, MailSenderImpl.MailType mailType) throws MessagingException {
+    private void sendOrderStatusUpdatedEmail(Integer orderId) throws MessagingException {
         Order order = orderRepository.findOrderById(orderId);
 
         Map<String, Object> mailContext = new HashMap<>();
@@ -171,6 +181,32 @@ public class OrderServiceImpl implements OrderService {
         mailContext.put("status", order.getStatus().getName());
         mailContext.put("username", order.getBuyer().getUsername());
 
-        mailSender.sendEmail(order.getBuyer().getEmail(), "GoldenBook order", mailType, mailContext);
+        mailSender.sendEmail(order.getBuyer().getEmail(), "GoldenBook order", MailSenderImpl.MailType.ORDER_STATUS_UPDATE, mailContext);
+    }
+
+    private void sendOrderConfirmationEmail(Integer orderId, String attachmentFile) throws MessagingException {
+        Order order = orderRepository.findOrderById(orderId);
+
+        Map<String, Object> mailContext = new HashMap<>();
+        mailContext.put("orderId", orderId);
+        mailContext.put("attachmentFile", attachmentFile);
+        mailContext.put("username", order.getBuyer().getUsername());
+
+        mailSender.sendEmail(order.getBuyer().getEmail(), "GoldenBook order confirmed", MailSenderImpl.MailType.ORDER_CONFIRMED, mailContext);
+    }
+
+    private String generateInvoice(Integer orderId) throws FileNotFoundException, JRException {
+        List<Book> bookList = new ArrayList<Book>();
+        Map<String, Object> parameter = new HashMap<String, Object>();
+
+        bookList.addAll(orderRepository.findOrderById(orderId).getBooks());
+
+        parameter.put("dataSource", new JRBeanCollectionDataSource(bookList));
+        parameter.put("orderId", orderId);
+
+        String outFileName = invoiceRepository + "GoldenBookInvoice" + orderId + ".pdf";
+        pdfGenerator.createPdfFile("src/main/resources/templates/invoice-template.jrxml", outFileName, parameter);
+
+        return outFileName;
     }
 }

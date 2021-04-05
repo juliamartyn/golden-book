@@ -2,8 +2,10 @@ package com.juliamartyn.goldenbook.services;
 
 
 import com.juliamartyn.goldenbook.controllers.response.OrderResponse;
+import net.sf.jasperreports.engine.JRException;
 
 import javax.mail.MessagingException;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 public interface OrderService {
@@ -13,9 +15,9 @@ public interface OrderService {
     List<OrderResponse> findAllConfirmedOrders();
     List<OrderResponse> findOrdersByBuyerId(Long buyerId);
     void deleteBookFromCart(Integer orderId, Integer bookId);
-    void confirmOrder(Integer orderId) throws MessagingException;
+    void confirmOrder(Integer orderId) throws MessagingException, FileNotFoundException, JRException;
     void preOrder(Integer bookId, Long currentUserId);
     List<OrderResponse> findPreOrdersByBuyerId(Long id);
     void cancelPreOrder(Integer orderId);
-    void confirmPreOrder(Integer orderId) throws MessagingException;
+    void confirmPreOrder(Integer orderId) throws MessagingException, FileNotFoundException, JRException;
 }

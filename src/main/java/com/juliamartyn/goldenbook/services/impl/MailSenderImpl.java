@@ -2,6 +2,7 @@ package com.juliamartyn.goldenbook.services.impl;
 
 import com.juliamartyn.goldenbook.services.MailSender;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,11 @@ public class MailSenderImpl  implements MailSender {
         helper.setText(process, true);
         helper.setTo(emailTo);
         helper.setFrom(username);
+
+        if(mailContext.get("attachmentFile") != null){
+            FileSystemResource file = new FileSystemResource((String) mailContext.get("attachmentFile"));
+            helper.addAttachment(file.getFilename(), file);
+        }
 
         mailSender.send(mailMessage);
     }
