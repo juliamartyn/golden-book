@@ -1,6 +1,7 @@
 package com.juliamartyn.goldenbook.repository;
 
 import com.juliamartyn.goldenbook.entities.Book;
+import com.juliamartyn.goldenbook.services.impl.reports.SoldBooksReportValues;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -33,4 +34,12 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
             "order by count(orders_books.book_id) DESC " +
             "limit 3", nativeQuery = true)
     List<Book> findTopSellingBooksByCategoryId(Integer categoryId);
+
+
+    @Query(value = "select  count(books.id) as quantity, sum(books.price) as amount from books " +
+            "join orders_books on books.id = orders_books.book_id " +
+            "join orders on orders_books.order_id = orders.id " +
+            "where orders.status_id != 1 and books.category_id = :categoryId " +
+            "and orders.created_at between :startDate and :endDate", nativeQuery = true)
+    SoldBooksReportValues getTotalValuesOfSoldBooksByCategory(Integer categoryId, String startDate, String endDate);
 }

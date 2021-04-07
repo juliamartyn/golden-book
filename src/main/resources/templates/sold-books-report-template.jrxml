@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 7.9.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sold-books-report-template" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2ec6c357-06bf-463b-be43-53d442aabe14">
+    <property name="template.engine" value="tabular_template"/>
+    <property name="ireport.zoom" value="1.0"/>
+    <property name="ireport.x" value="47"/>
+    <property name="ireport.y" value="451"/>
+    <style name="Title" forecolor="#FFFFFF" fontName="Times New Roman" fontSize="50" isBold="false"/>
+    <style name="Column header" forecolor="#666666" fontName="Times New Roman" fontSize="14" isBold="true"/>
+    <style name="Table">
+        <box>
+            <pen lineWidth="1.0" lineColor="#000000"/>
+            <topPen lineWidth="1.0" lineColor="#000000"/>
+            <leftPen lineWidth="1.0" lineColor="#000000"/>
+            <bottomPen lineWidth="1.0" lineColor="#000000"/>
+            <rightPen lineWidth="1.0" lineColor="#000000"/>
+        </box>
+    </style>
+    <style name="Table 1_TH" mode="Opaque" backcolor="#FFFFFF">
+        <box>
+            <pen lineWidth="0.5" lineColor="#000000"/>
+            <topPen lineWidth="0.5" lineColor="#000000"/>
+            <leftPen lineWidth="0.5" lineColor="#000000"/>
+            <bottomPen lineWidth="0.5" lineColor="#000000"/>
+            <rightPen lineWidth="0.5" lineColor="#000000"/>
+        </box>
+    </style>
+    <style name="Table 1_CH" mode="Opaque" backcolor="#FAD241">
+        <box>
+            <pen lineWidth="0.5" lineColor="#000000"/>
+            <topPen lineWidth="0.5" lineColor="#000000"/>
+            <leftPen lineWidth="0.5" lineColor="#000000"/>
+            <bottomPen lineWidth="0.5" lineColor="#000000"/>
+            <rightPen lineWidth="0.5" lineColor="#000000"/>
+        </box>
+    </style>
+    <style name="Table 1_TD" mode="Opaque" backcolor="#FAE9AA">
+        <box>
+            <pen lineWidth="0.5" lineColor="#000000"/>
+            <topPen lineWidth="0.5" lineColor="#000000"/>
+            <leftPen lineWidth="0.5" lineColor="#000000"/>
+            <bottomPen lineWidth="0.5" lineColor="#000000"/>
+            <rightPen lineWidth="0.5" lineColor="#000000"/>
+        </box>
+    </style>
+    <subDataset name="dataSet" uuid="481c568d-fc51-44ac-a897-0b87630ced78">
+        <property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+        <queryString>
+            <![CDATA[]]>
+        </queryString>
+        <field name="quantity" class="java.lang.Integer"/>
+        <field name="amount" class="java.math.BigDecimal"/>
+        <variable name="totalQuantity" class="java.lang.Integer" calculation="Sum">
+            <variableExpression><![CDATA[$F{quantity}]]></variableExpression>
+            <initialValueExpression><![CDATA[0]]></initialValueExpression>
+        </variable>
+        <variable name="totalAmount" class="java.math.BigDecimal" calculation="Sum">
+            <variableExpression><![CDATA[$F{amount}]]></variableExpression>
+            <initialValueExpression><![CDATA[0]]></initialValueExpression>
+        </variable>
+    </subDataset>
+    <parameter name="fromDate" class="java.lang.String"/>
+    <parameter name="toDate" class="java.lang.String"/>
+    <parameter name="dataSource" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+    <queryString>
+        <![CDATA[]]>
+    </queryString>
+    <variable name="totalQuantity" class="java.lang.Integer"/>
+    <title>
+        <band height="99" splitType="Stretch">
+            <frame>
+                <reportElement mode="Opaque" x="-20" y="0" width="822" height="65" forecolor="#006699" backcolor="#343A40" uuid="e8bc167b-bf12-4977-b458-b029eaaafdfb"/>
+                <staticText>
+                    <reportElement style="Title" x="231" y="0" width="578" height="65" forecolor="#FFC107" uuid="e1a595c4-b39a-4bde-b6cf-36a6224d2ff6"/>
+                    <textElement textAlignment="Right">
+                        <font fontName="Segoe UI" size="42" isBold="false"/>
+                    </textElement>
+                    <text><![CDATA[GoldenBook]]></text>
+                </staticText>
+                <staticText>
+                    <reportElement x="19" y="23" width="71" height="19" forecolor="rgba(139, 141, 143, 0.84313726)" uuid="535521a6-05e4-4c0d-a550-837c6d6dda0d"/>
+                    <textElement markup="styled">
+                        <font fontName="Segoe UI" size="14" isBold="false"/>
+                    </textElement>
+                    <text><![CDATA[REPORT]]></text>
+                </staticText>
+            </frame>
+            <frame>
+                <reportElement mode="Opaque" x="2" y="78" width="800" height="16" forecolor="#D0B48E" backcolor="#FFC107" uuid="20b2b7aa-d9f6-4474-a029-0451cf1198f7"/>
+                <textField pattern="M/d/yy">
+                    <reportElement style="Column header" x="87" y="0" width="197" height="16" forecolor="#FFFFFF" uuid="f3965abf-717f-480b-a953-6e3280d90420"/>
+                    <textElement verticalAlignment="Middle">
+                        <font fontName="Segoe UI" size="12" isBold="false"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+                </textField>
+                <staticText>
+                    <reportElement x="5" y="2" width="72" height="14" forecolor="#FFFFFF" uuid="89e22624-b4a9-408e-88d9-c9a5f5755829"/>
+                    <text><![CDATA[Generated on:]]></text>
+                </staticText>
+            </frame>
+        </band>
+    </title>
+    <detail>
+        <band height="400">
+            <property name="com.jaspersoft.studio.unit.height" value="px"/>
+            <staticText>
+                <reportElement x="685" y="34" width="39" height="19" forecolor="#000000" uuid="5a2f4434-6612-4dde-9a97-dd27bc7cf089"/>
+                <textElement>
+                    <font fontName="Segoe UI" size="11" isBold="false"/>
+                </textElement>
+                <text><![CDATA[FROM:]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="702" y="52" width="20" height="19" forecolor="#000000" uuid="bc73f298-ff40-46d1-80e3-7841da48b883"/>
+                <textElement>
+                    <font fontName="Segoe UI" size="11" isBold="false"/>
+                </textElement>
+                <text><![CDATA[TO:]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="582" y="11" width="128" height="19" forecolor="#343A40" uuid="02f65f9e-d2e7-40fb-9e6b-6e89d03d819b"/>
+                <textElement>
+                    <font fontName="Segoe UI" size="12" isBold="false"/>
+                </textElement>
+                <text><![CDATA[REPORTED DATES]]></text>
+            </staticText>
+            <line>
+                <reportElement x="581" y="30" width="221" height="1" uuid="e08ea305-fc2d-40c0-aeb5-efdc6ca2c761"/>
+                <graphicElement>
+                    <pen lineWidth="1.0" lineStyle="Solid" lineColor="#343A40"/>
+                </graphicElement>
+            </line>
+            <textField pattern="MMM d, yyyy">
+                <reportElement x="724" y="34" width="78" height="18" uuid="f062a8e4-fc9c-4a9e-8212-07783d131746"/>
+                <textElement>
+                    <font fontName="Segoe UI" size="11"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{fromDate}]]></textFieldExpression>
+            </textField>
+            <textField pattern="MMM d, yyyy">
+                <reportElement x="724" y="53" width="78" height="18" uuid="4e8df0d2-0380-4f99-84a1-beddc32ed5d8">
+                    <property name="com.jaspersoft.studio.unit.height" value="px"/>
+                </reportElement>
+                <textElement>
+                    <font fontName="Segoe UI" size="11"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{toDate}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="3" y="325" width="89" height="19" forecolor="#343A40" uuid="b84af3fb-067e-42a4-8063-55812adda19e"/>
+                <textElement>
+                    <font fontName="Segoe UI" size="14" isBold="false"/>
+                </textElement>
+                <text><![CDATA[TOTAL SOLD]]></text>
+            </staticText>
+            <line>
+                <reportElement x="1" y="344" width="581" height="1" uuid="7fae79ce-b71f-4721-a25b-d68798b42b2e">
+                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
+                    <property name="com.jaspersoft.studio.unit.y" value="px"/>
+                </reportElement>
+                <graphicElement>
+                    <pen lineWidth="1.0" lineStyle="Solid" lineColor="#343A40"/>
+                </graphicElement>
+            </line>
+            <staticText>
+                <reportElement x="0" y="94" width="170" height="19" forecolor="#343A40" uuid="67964af0-f787-4369-9f5d-c1d8c5db74bc"/>
+                <textElement>
+                    <font fontName="Segoe UI" size="14" isBold="false"/>
+                </textElement>
+                <text><![CDATA[SOLD BY CATEGORY]]></text>
+            </staticText>
+            <line>
+                <reportElement x="0" y="113" width="581" height="1" uuid="8ceb79f2-d3b1-4268-b200-9e36fa07f0af"/>
+                <graphicElement>
+                    <pen lineWidth="1.0" lineStyle="Solid" lineColor="#343A40"/>
+                </graphicElement>
+            </line>
+            <frame>
+                <reportElement mode="Opaque" x="179" y="140" width="101" height="175" forecolor="#D0B48E" backcolor="#FAD241" uuid="1fd17940-755c-4ef3-ad44-2f862031edb3"/>
+                <box>
+                    <pen lineWidth="0.5" lineColor="#000000"/>
+                </box>
+                <staticText>
+                    <reportElement x="1" y="11" width="100" height="20" uuid="de3efe4b-dd76-4aa4-8207-0a1900092cdb">
+                        <property name="com.jaspersoft.studio.unit.height" value="px"/>
+                    </reportElement>
+                    <textElement textAlignment="Center">
+                        <font fontName="Segoe UI" size="12"/>
+                    </textElement>
+                    <text><![CDATA[CATEGORY]]></text>
+                </staticText>
+                <staticText>
+                    <reportElement x="0" y="35" width="100" height="35" uuid="5e6659f6-3ee7-4d26-8080-295ed0ddc936">
+                        <property name="com.jaspersoft.studio.unit.height" value="px"/>
+                    </reportElement>
+                    <box>
+                        <pen lineWidth="0.5"/>
+                        <topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+                        <leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+                        <bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+                        <rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+                    </box>
+                    <textElement textAlignment="Center" verticalAlignment="Middle">
+                        <font fontName="Segoe UI" size="14"/>
+                    </textElement>
+                    <text><![CDATA[Science Fiction]]></text>
+                </staticText>
+                <staticText>
+                    <reportElement x="0" y="70" width="100" height="35" uuid="0454dc7e-b82c-4d99-9b85-08f686dfc704">
+                        <property name="com.jaspersoft.studio.unit.height" value="px"/>
+                    </reportElement>
+                    <box>
+                        <pen lineWidth="0.5"/>
+                        <topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+                        <leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+                        <bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+                        <rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+                    </box>
+                    <textElement textAlignment="Center" verticalAlignment="Middle">
+                        <font fontName="Segoe UI" size="14"/>
+                    </textElement>
+                    <text><![CDATA[Fantasy]]></text>
+                </staticText>
+                <staticText>
+                    <reportElement x="0" y="105" width="100" height="35" uuid="7ef3d68c-2b23-4181-814c-c50da42b4007">
+                        <property name="com.jaspersoft.studio.unit.height" value="px"/>
+                    </reportElement>
+                    <box>
+                        <pen lineWidth="0.5"/>
+                        <topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+                        <leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+                        <bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+                        <rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+                    </box>
+                    <textElement textAlignment="Center" verticalAlignment="Middle">
+                        <font fontName="Segoe UI" size="14"/>
+                    </textElement>
+                    <text><![CDATA[Biography]]></text>
+                </staticText>
+                <staticText>
+                    <reportElement x="0" y="140" width="100" height="35" uuid="eb52f22b-c666-4cf9-883e-05ba79d957ac">
+                        <property name="com.jaspersoft.studio.unit.height" value="px"/>
+                    </reportElement>
+                    <box>
+                        <pen lineWidth="0.5"/>
+                        <topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+                        <leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+                        <bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+                        <rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+                    </box>
+                    <textElement textAlignment="Center" verticalAlignment="Middle">
+                        <font fontName="Segoe UI" size="14"/>
+                    </textElement>
+                    <text><![CDATA[Crime]]></text>
+                </staticText>
+            </frame>
+            <componentElement>
+                <reportElement x="280" y="140" width="200" height="175" uuid="2e17617a-7019-40b8-8cfa-5654609c132a">
+                    <property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+                    <property name="com.jaspersoft.studio.table.style.table_header" value="Table 1_TH"/>
+                    <property name="com.jaspersoft.studio.table.style.column_header" value="Table 1_CH"/>
+                    <property name="com.jaspersoft.studio.table.style.detail" value="Table 1_TD"/>
+                    <property name="com.jaspersoft.studio.unit.height" value="px"/>
+                </reportElement>
+                <jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+                    <datasetRun subDataset="dataSet" uuid="e390092e-e3de-401d-ac3d-680189892c22">
+                        <dataSourceExpression><![CDATA[$P{dataSource}]]></dataSourceExpression>
+                    </datasetRun>
+                    <jr:column width="100" uuid="f9cab9c7-b5bb-4b23-88ce-24fe98d05f5e">
+                        <property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
+                        <jr:tableFooter style="Table 1_TH" height="30" rowSpan="1">
+                            <property name="com.jaspersoft.studio.unit.height" value="px"/>
+                            <box>
+                                <pen lineWidth="0.5"/>
+                            </box>
+                            <textField>
+                                <reportElement x="0" y="0" width="100" height="30" uuid="3272dd1b-1c50-4e09-a133-45ae18a166b6"/>
+                                <textElement textAlignment="Center" verticalAlignment="Middle">
+                                    <font fontName="Segoe UI" size="12"/>
+                                </textElement>
+                                <textFieldExpression><![CDATA[$V{totalQuantity}]]></textFieldExpression>
+                            </textField>
+                        </jr:tableFooter>
+                        <jr:columnHeader style="Table 1_CH" height="35">
+                            <property name="com.jaspersoft.studio.unit.height" value="px"/>
+                            <staticText>
+                                <reportElement x="0" y="0" width="100" height="35" uuid="1031c104-b02e-4250-b63a-60213c1cb251"/>
+                                <textElement textAlignment="Center" verticalAlignment="Middle">
+                                    <font fontName="Segoe UI" size="12"/>
+                                </textElement>
+                                <text><![CDATA[QUANTITY]]></text>
+                            </staticText>
+                        </jr:columnHeader>
+                        <jr:detailCell style="Table 1_TD" height="35">
+                            <property name="com.jaspersoft.studio.unit.height" value="px"/>
+                            <textField>
+                                <reportElement x="0" y="0" width="100" height="35" uuid="852b5f8e-708e-420a-9133-2abd0db3c344"/>
+                                <textElement textAlignment="Center" verticalAlignment="Middle">
+                                    <font fontName="Segoe UI" size="12"/>
+                                </textElement>
+                                <textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+                    </jr:column>
+                    <jr:column width="100" uuid="6c12595b-6030-42e8-939b-ad43d38e05b5">
+                        <property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
+                        <jr:tableFooter style="Table 1_TH" height="30" rowSpan="1">
+                            <box>
+                                <pen lineWidth="0.5"/>
+                            </box>
+                            <textField>
+                                <reportElement x="0" y="0" width="100" height="30" uuid="1e6a860e-0846-4774-ac58-4ed2d2058afa"/>
+                                <textElement textAlignment="Center" verticalAlignment="Middle">
+                                    <font fontName="Segoe UI" size="12"/>
+                                </textElement>
+                                <textFieldExpression><![CDATA[$V{totalAmount}]]></textFieldExpression>
+                            </textField>
+                        </jr:tableFooter>
+                        <jr:columnHeader style="Table 1_CH" height="35">
+                            <staticText>
+                                <reportElement x="0" y="0" width="100" height="35" uuid="a22e4073-bf47-434d-a7b4-5aeebfe5d3a2"/>
+                                <textElement textAlignment="Center" verticalAlignment="Middle">
+                                    <font fontName="Segoe UI" size="12"/>
+                                </textElement>
+                                <text><![CDATA[AMOUNT $]]></text>
+                            </staticText>
+                        </jr:columnHeader>
+                        <jr:detailCell style="Table 1_TD" height="35">
+                            <textField>
+                                <reportElement x="0" y="0" width="100" height="35" uuid="12dba828-f69d-4d7b-812b-663e7b4aba39"/>
+                                <textElement textAlignment="Center" verticalAlignment="Middle">
+                                    <font fontName="Segoe UI" size="12"/>
+                                </textElement>
+                                <textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+                    </jr:column>
+                </jr:table>
+            </componentElement>
+        </band>
+    </detail>
+    <pageFooter>
+        <band height="16" splitType="Stretch"/>
+    </pageFooter>
+</jasperReport>

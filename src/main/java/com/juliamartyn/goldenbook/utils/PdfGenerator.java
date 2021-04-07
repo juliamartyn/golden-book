@@ -18,12 +18,14 @@ import java.util.Map;
 @Service
 public class PdfGenerator {
 
-    public void createPdfFile(String fileTemplateName, String outFileName, Map<String, Object> parameters) throws JRException, FileNotFoundException {
+    public File createPdfFile(String fileTemplateName, String outFileName, Map<String, Object> parameters) throws JRException, FileNotFoundException {
         JasperReport jasperDesign = JasperCompileManager.compileReport(fileTemplateName);
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperDesign, parameters, new JREmptyDataSource());
 
         File file = new File(outFileName);
         OutputStream outputStream = new FileOutputStream(file);
         JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
+
+        return file;
     }
 }
