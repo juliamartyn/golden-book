@@ -39,8 +39,9 @@ public class OrderServiceImpl implements OrderService {
     private final MailSender mailSender;
     private final PdfGenerator pdfGenerator;
 
-    public OrderServiceImpl(OrderRepository orderRepository, OrderConverter orderConverter, BookRepository bookRepository,
-                            OrderStatusRepository orderStatusRepository, UserRepository userRepository, MailSender mailSender, PdfGenerator pdfGenerator) {
+    public OrderServiceImpl(OrderRepository orderRepository, OrderConverter orderConverter,
+                            BookRepository bookRepository, OrderStatusRepository orderStatusRepository,
+                            UserRepository userRepository, MailSender mailSender, PdfGenerator pdfGenerator) {
         this.orderRepository = orderRepository;
         this.orderConverter = orderConverter;
         this.bookRepository = bookRepository;
@@ -59,7 +60,12 @@ public class OrderServiceImpl implements OrderService {
             List<Book> bookList = new ArrayList<>(order.getBooks());
             bookList.add(newBook);
             order.setBooks(bookList);
-            order.setTotalPrice(order.getTotalPrice().add(newBook.getPrice()));
+
+            if(newBook.getPriceWithDiscount() == null) {
+                order.setTotalPrice(order.getTotalPrice().add(newBook.getPrice()));
+            } else {
+                order.setTotalPrice(order.getTotalPrice().add(newBook.getPriceWithDiscount()));
+            }
 
             return orderConverter.of(orderRepository.save(order));
         } else {
@@ -67,7 +73,12 @@ public class OrderServiceImpl implements OrderService {
             List<Book> bookList = new ArrayList<>();
             bookList.add(newBook);
             newOrder.setBooks(bookList);
-            newOrder.setTotalPrice(newBook.getPrice());
+
+            if(newBook.getPriceWithDiscount() == null) {
+                newOrder.setTotalPrice(newBook.getPrice());
+            } else {
+                newOrder.setTotalPrice(newBook.getPrice().subtract(newBook.getPriceWithDiscount()));
+            }
 
             return orderConverter.of(orderRepository.save(newOrder));
         }
@@ -108,7 +119,12 @@ public class OrderServiceImpl implements OrderService {
         Book bookToDelete = bookRepository.findBookById(bookId);
 
         order.getBooks().remove(bookToDelete);
-        orderRepository.updateTotalPrice(orderId, order.getTotalPrice().subtract(bookToDelete.getPrice()));
+
+        if(bookToDelete.getPriceWithDiscount() == null){
+            orderRepository.updateTotalPrice(orderId, order.getTotalPrice().subtract(bookToDelete.getPrice()));
+        } else {
+            orderRepository.updateTotalPrice(orderId, order.getTotalPrice().subtract(bookToDelete.getPriceWithDiscount()));
+        }
 
         orderRepository.save(order);
     }

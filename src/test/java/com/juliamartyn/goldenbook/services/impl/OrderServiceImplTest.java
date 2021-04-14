@@ -138,7 +138,7 @@ class OrderServiceImplTest {
                         "address", false, "ROLE_CUSTOMER"))
                 .totalPrice(BigDecimal.valueOf(100))
                 .books(List.of(new BookResponse(1, "title", "author", "description",
-                        "category", BigDecimal.valueOf(100), 1, LocalDate.now(), "image".getBytes())))
+                        "category", BigDecimal.valueOf(100), 1, LocalDate.now(), "image".getBytes(), BigDecimal.valueOf(100))))
                 .build();
     }
 

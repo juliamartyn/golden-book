@@ -1,7 +1,11 @@
 package com.juliamartyn.goldenbook.repository;
 
 import com.juliamartyn.goldenbook.entities.Book;
+import com.juliamartyn.goldenbook.entities.Discount;
+import com.juliamartyn.goldenbook.entities.EmailHistory;
 import com.juliamartyn.goldenbook.services.impl.reports.SoldBooksReportValues;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -42,4 +46,8 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
             "where orders.status_id != 1 and books.category_id = :categoryId " +
             "and orders.created_at between :startDate and :endDate", nativeQuery = true)
     SoldBooksReportValues getTotalValuesOfSoldBooksByCategory(Integer categoryId, String startDate, String endDate);
+
+    Page<Book> findAll(Pageable pageable);
+
+    List<Book> findBooksByDiscountId(Integer discountId);
 }

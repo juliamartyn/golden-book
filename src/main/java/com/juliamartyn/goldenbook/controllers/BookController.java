@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.juliamartyn.goldenbook.controllers.request.BookPriceRequest;
 import com.juliamartyn.goldenbook.controllers.request.BookQuantityRequest;
 import com.juliamartyn.goldenbook.controllers.request.BookRequest;
+import com.juliamartyn.goldenbook.controllers.request.DiscountRequest;
+import com.juliamartyn.goldenbook.controllers.response.BookPageableResponse;
 import com.juliamartyn.goldenbook.controllers.response.BookResponse;
 import com.juliamartyn.goldenbook.services.BookService;
 import org.springframework.http.HttpStatus;
@@ -50,6 +52,12 @@ public class BookController {
         return new ResponseEntity<>(bookService.findAll(), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_SELLER') OR hasAuthority('ROLE_CUSTOMER')")
+    @GetMapping("/page/{pageNo}")
+    public ResponseEntity<BookPageableResponse> booksPageable(@PathVariable int pageNo) {
+        return new ResponseEntity<>(bookService.findPageableBooks(pageNo, 10), HttpStatus.OK);
+    }
+
     @PreAuthorize("hasAuthority('ROLE_ADMIN')  OR hasAuthority('ROLE_SELLER')")
     @GetMapping("/{id}")
     public ResponseEntity<BookResponse> findBookById(@PathVariable Integer id) {
@@ -82,4 +90,10 @@ public class BookController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_SELLER') OR hasAuthority('ROLE_ADMIN')")
+    @PostMapping("/apply-discount")
+    public ResponseEntity<Void> applyDiscount(@RequestBody DiscountRequest discountRequest){
+        bookService.addDiscount(discountRequest);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

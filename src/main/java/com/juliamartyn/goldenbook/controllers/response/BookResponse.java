@@ -23,4 +23,5 @@ public class BookResponse {
     private Integer quantity;
     private LocalDate startSaleDate;
     private byte[] image;
+    private BigDecimal priceWithDiscount;
 }

@@ -46,4 +46,9 @@ public class Book {
     @JoinColumn(name = "category_id",  referencedColumnName = "id")
     private BookCategory category;
 
+    @ManyToOne
+    @JoinColumn(name = "discount_id",  referencedColumnName = "id")
+    private Discount discount;
+
+    private BigDecimal priceWithDiscount;
 }

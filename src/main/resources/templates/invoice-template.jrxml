@@ -52,8 +52,9 @@
         <field name="title" class="java.lang.String"/>
         <field name="author" class="java.lang.String"/>
         <field name="price" class="java.math.BigDecimal"/>
-        <variable name="totalPrice" class="java.math.BigDecimal" calculation="Sum">
-            <variableExpression><![CDATA[$F{price}]]></variableExpression>
+        <field name="priceWithDiscount" class="java.math.BigDecimal"/>
+        <variable name="totalPaymentAmount" class="java.math.BigDecimal" calculation="Sum">
+            <variableExpression><![CDATA[$F{priceWithDiscount}]]></variableExpression>
             <initialValueExpression><![CDATA[0]]></initialValueExpression>
         </variable>
     </subDataset>
@@ -128,22 +129,24 @@
                     <datasetRun subDataset="dataSet" uuid="e0268785-a3d6-483f-8af9-6157e1fc6b2b">
                         <dataSourceExpression><![CDATA[$P{dataSource}]]></dataSourceExpression>
                     </datasetRun>
-                    <jr:column width="190" uuid="b90597be-e60e-4117-b2b4-3cc9dea22981">
+                    <jr:column width="150" uuid="b90597be-e60e-4117-b2b4-3cc9dea22981">
                         <property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
                         <jr:tableHeader style="Table_TH" height="30" rowSpan="1">
                             <property name="com.jaspersoft.studio.unit.width" value="px"/>
                             <staticText>
-                                <reportElement x="0" y="0" width="190" height="30" uuid="76e4e596-b8a1-4a28-ad72-0453e08eaad8"/>
+                                <reportElement x="0" y="0" width="150" height="30" uuid="76e4e596-b8a1-4a28-ad72-0453e08eaad8"/>
                                 <textElement textAlignment="Left" verticalAlignment="Middle">
                                     <font fontName="Segoe UI" size="16" isBold="true"/>
                                 </textElement>
                                 <text><![CDATA[BOOKS]]></text>
                             </staticText>
                         </jr:tableHeader>
-                        <jr:tableFooter style="Table_TH" height="30" rowSpan="1"/>
+                        <jr:tableFooter style="Table_TH" height="30" rowSpan="1">
+                            <property name="com.jaspersoft.studio.unit.width" value="px"/>
+                        </jr:tableFooter>
                         <jr:columnHeader style="Table_CH" height="30" rowSpan="1">
                             <staticText>
-                                <reportElement x="0" y="0" width="190" height="30" uuid="cd97bafc-207a-416e-b720-0d8a96042ef6"/>
+                                <reportElement x="0" y="0" width="150" height="30" uuid="cd97bafc-207a-416e-b720-0d8a96042ef6"/>
                                 <textElement textAlignment="Center" verticalAlignment="Middle">
                                     <font fontName="Segoe UI" size="12"/>
                                 </textElement>
@@ -153,7 +156,7 @@
                         <jr:detailCell style="Table_TD" height="30">
                             <box topPadding="0" leftPadding="5" bottomPadding="0" rightPadding="0"/>
                             <textField>
-                                <reportElement x="0" y="0" width="185" height="30" uuid="62a6980b-f7da-4aaa-aeee-ea712e766efc">
+                                <reportElement x="0" y="0" width="145" height="30" uuid="62a6980b-f7da-4aaa-aeee-ea712e766efc">
                                     <property name="com.jaspersoft.studio.unit.width" value="pixel"/>
                                 </reportElement>
                                 <textElement verticalAlignment="Middle"/>
@@ -161,23 +164,14 @@
                             </textField>
                         </jr:detailCell>
                     </jr:column>
-                    <jr:column width="190" uuid="070ae8e8-462f-4142-962e-c5fcf9028f49">
+                    <jr:column width="150" uuid="070ae8e8-462f-4142-962e-c5fcf9028f49">
                         <property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
                         <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                        <jr:tableFooter style="Table_TH" height="30" rowSpan="1">
-                            <staticText>
-                                <reportElement x="0" y="0" width="190" height="30" uuid="ddc7e1b8-4569-499a-80f3-129b432916f8"/>
-                                <box rightPadding="5"/>
-                                <textElement textAlignment="Right" verticalAlignment="Middle">
-                                    <font fontName="Segoe UI" size="12"/>
-                                </textElement>
-                                <text><![CDATA[TOTAL   ]]></text>
-                            </staticText>
-                        </jr:tableFooter>
+                        <jr:tableFooter style="Table_TH" height="30" rowSpan="1"/>
                         <jr:columnHeader style="Table_CH" height="30" rowSpan="1">
                             <property name="com.jaspersoft.studio.unit.width" value="px"/>
                             <staticText>
-                                <reportElement x="0" y="0" width="190" height="30" uuid="6832c168-ce75-4fe9-a0b7-0f4ba2a771f1"/>
+                                <reportElement x="0" y="0" width="150" height="30" uuid="6832c168-ce75-4fe9-a0b7-0f4ba2a771f1"/>
                                 <textElement textAlignment="Center" verticalAlignment="Middle">
                                     <font fontName="Segoe UI" size="12"/>
                                 </textElement>
@@ -187,27 +181,30 @@
                         <jr:detailCell style="Table_TD" height="30">
                             <box leftPadding="5"/>
                             <textField>
-                                <reportElement x="0" y="0" width="185" height="30" uuid="686ad1d6-e4d1-4703-b3b8-2870486ab2d9"/>
+                                <reportElement x="0" y="0" width="145" height="30" uuid="686ad1d6-e4d1-4703-b3b8-2870486ab2d9"/>
                                 <textElement verticalAlignment="Middle"/>
                                 <textFieldExpression><![CDATA[$F{author}]]></textFieldExpression>
                             </textField>
                         </jr:detailCell>
                     </jr:column>
-                    <jr:column width="190" uuid="f351afea-2651-4078-ba05-655fb0f6829a">
+                    <jr:column width="140" uuid="f351afea-2651-4078-ba05-655fb0f6829a">
                         <property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
                         <property name="com.jaspersoft.studio.unit.width" value="px"/>
                         <jr:tableFooter style="Table_TH" height="30" rowSpan="1">
                             <box rightPadding="5"/>
-                            <textField>
-                                <reportElement x="0" y="0" width="185" height="30" uuid="3507e36a-c5e1-483f-abb6-6c316d4d5bc3"/>
-                                <textElement textAlignment="Right" verticalAlignment="Middle"/>
-                                <textFieldExpression><![CDATA[$V{totalPrice}]]></textFieldExpression>
-                            </textField>
+                            <staticText>
+                                <reportElement x="0" y="0" width="135" height="30" uuid="ddc7e1b8-4569-499a-80f3-129b432916f8"/>
+                                <box rightPadding="0"/>
+                                <textElement textAlignment="Right" verticalAlignment="Middle">
+                                    <font fontName="Segoe UI" size="12"/>
+                                </textElement>
+                                <text><![CDATA[TOTAL   ]]></text>
+                            </staticText>
                         </jr:tableFooter>
                         <jr:columnHeader style="Table_CH" height="30" rowSpan="1">
                             <property name="com.jaspersoft.studio.unit.width" value="px"/>
                             <staticText>
-                                <reportElement x="0" y="0" width="190" height="30" uuid="99efe0cb-a36e-40c4-a240-d536bb6fa988"/>
+                                <reportElement x="0" y="0" width="140" height="30" uuid="99efe0cb-a36e-40c4-a240-d536bb6fa988"/>
                                 <textElement textAlignment="Center" verticalAlignment="Middle">
                                     <font fontName="Segoe UI" size="12"/>
                                 </textElement>
@@ -217,10 +214,43 @@
                         <jr:detailCell style="Table_TD" height="30">
                             <box leftPadding="5"/>
                             <textField>
-                                <reportElement x="0" y="0" width="185" height="30" uuid="453bb78e-f002-467b-9d4f-8c60b63bfecc"/>
+                                <reportElement x="0" y="0" width="135" height="30" uuid="453bb78e-f002-467b-9d4f-8c60b63bfecc"/>
                                 <box rightPadding="5"/>
                                 <textElement textAlignment="Right" verticalAlignment="Middle"/>
                                 <textFieldExpression><![CDATA[$F{price}]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+                    </jr:column>
+                    <jr:column width="130" uuid="29210a6f-44c4-466d-b96a-56b531091207">
+                        <property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
+                        <property name="com.jaspersoft.studio.unit.width" value="px"/>
+                        <jr:tableFooter style="Table_TH" height="30" rowSpan="1">
+                            <textField>
+                                <reportElement x="0" y="0" width="130" height="30" uuid="1b6faa22-9e86-4261-a0dd-54c1e56cbc76"/>
+                                <box rightPadding="5"/>
+                                <textElement textAlignment="Right" verticalAlignment="Middle">
+                                    <font fontName="Segoe UI"/>
+                                </textElement>
+                                <textFieldExpression><![CDATA[$V{totalPaymentAmount}]]></textFieldExpression>
+                            </textField>
+                        </jr:tableFooter>
+                        <jr:columnHeader style="Table_CH" height="30" rowSpan="1">
+                            <staticText>
+                                <reportElement x="0" y="0" width="130" height="30" uuid="4346ab9c-af26-4847-a4b9-94f6a67e8054"/>
+                                <textElement textAlignment="Center" verticalAlignment="Middle">
+                                    <font fontName="Segoe UI" size="12"/>
+                                </textElement>
+                                <text><![CDATA[Payment Amount]]></text>
+                            </staticText>
+                        </jr:columnHeader>
+                        <jr:detailCell style="Table_TD" height="30">
+                            <textField>
+                                <reportElement style="Table" x="0" y="0" width="130" height="30" uuid="3495fafd-fa2b-40db-91a0-1c6ce0217d3f"/>
+                                <box rightPadding="5"/>
+                                <textElement textAlignment="Right" verticalAlignment="Middle">
+                                    <font fontName="SansSerif"/>
+                                </textElement>
+                                <textFieldExpression><![CDATA[$F{priceWithDiscount}]]></textFieldExpression>
                             </textField>
                         </jr:detailCell>
                     </jr:column>
