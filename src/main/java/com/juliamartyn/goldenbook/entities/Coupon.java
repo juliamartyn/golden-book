@@ -1,6 +1,5 @@
 package com.juliamartyn.goldenbook.entities;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,42 +12,31 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.Set;
+import java.time.LocalDate;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
 @Getter
+@Setter
 @Builder
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name = "coupons")
+public class Coupon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
-    private String username;
+    private Integer discount;
 
-    private String password;
+    private LocalDate dueDate;
 
-    private String email;
-
-    private String phone;
-
-    private String deliveryAddress;
+    private Integer bookQuantity;
 
     @Builder.Default
-    private Boolean disabled = false;
+    private Boolean used = false;
 
     @ManyToOne
-    @JoinColumn(name = "role_id",  referencedColumnName = "id")
-    private Role role;
-
-    @OneToMany(mappedBy = "buyer")
-    private Set<Order> orders;
-
-    @OneToMany(mappedBy = "customer")
-    private Set<Coupon> coupons;
+    @JoinColumn(name = "customer_id",  referencedColumnName = "id")
+    private User customer;
 }

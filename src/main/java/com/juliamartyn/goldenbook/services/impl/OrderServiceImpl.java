@@ -2,9 +2,11 @@ package com.juliamartyn.goldenbook.services.impl;
 
 import com.juliamartyn.goldenbook.controllers.response.OrderResponse;
 import com.juliamartyn.goldenbook.entities.Book;
+import com.juliamartyn.goldenbook.entities.Coupon;
 import com.juliamartyn.goldenbook.entities.Order;
 import com.juliamartyn.goldenbook.exception.NotFoundException;
 import com.juliamartyn.goldenbook.repository.BookRepository;
+import com.juliamartyn.goldenbook.repository.CouponRepository;
 import com.juliamartyn.goldenbook.repository.OrderRepository;
 import com.juliamartyn.goldenbook.repository.OrderStatusRepository;
 import com.juliamartyn.goldenbook.repository.UserRepository;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import java.io.FileNotFoundException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,17 +39,20 @@ public class OrderServiceImpl implements OrderService {
     private final BookRepository bookRepository;
     private final OrderStatusRepository orderStatusRepository;
     private final UserRepository userRepository;
+    private final CouponRepository couponRepository;
     private final MailSender mailSender;
     private final PdfGenerator pdfGenerator;
 
     public OrderServiceImpl(OrderRepository orderRepository, OrderConverter orderConverter,
                             BookRepository bookRepository, OrderStatusRepository orderStatusRepository,
-                            UserRepository userRepository, MailSender mailSender, PdfGenerator pdfGenerator) {
+                            UserRepository userRepository, CouponRepository couponRepository,
+                            MailSender mailSender, PdfGenerator pdfGenerator) {
         this.orderRepository = orderRepository;
         this.orderConverter = orderConverter;
         this.bookRepository = bookRepository;
         this.orderStatusRepository = orderStatusRepository;
         this.userRepository = userRepository;
+        this.couponRepository = couponRepository;
         this.mailSender = mailSender;
         this.pdfGenerator = pdfGenerator;
     }
@@ -61,11 +67,7 @@ public class OrderServiceImpl implements OrderService {
             bookList.add(newBook);
             order.setBooks(bookList);
 
-            if(newBook.getPriceWithDiscount() == null) {
-                order.setTotalPrice(order.getTotalPrice().add(newBook.getPrice()));
-            } else {
-                order.setTotalPrice(order.getTotalPrice().add(newBook.getPriceWithDiscount()));
-            }
+            order.setTotalPrice(order.getTotalPrice().add(newBook.getPriceWithDiscount()));
 
             return orderConverter.of(orderRepository.save(order));
         } else {
@@ -74,11 +76,7 @@ public class OrderServiceImpl implements OrderService {
             bookList.add(newBook);
             newOrder.setBooks(bookList);
 
-            if(newBook.getPriceWithDiscount() == null) {
-                newOrder.setTotalPrice(newBook.getPrice());
-            } else {
-                newOrder.setTotalPrice(newBook.getPrice().subtract(newBook.getPriceWithDiscount()));
-            }
+            newOrder.setTotalPrice(newBook.getPriceWithDiscount());
 
             return orderConverter.of(orderRepository.save(newOrder));
         }
@@ -176,6 +174,26 @@ public class OrderServiceImpl implements OrderService {
         sendOrderConfirmationEmail(orderId, generateInvoice(orderId));
     }
 
+    @Override
+    public void applyCouponToOrder(Integer orderId, Integer couponId){
+        Order order = orderRepository.findOrderById(orderId);
+        Coupon coupon = couponRepository.findCouponById(couponId);
+        order.setCoupon(coupon);
+        coupon.setUsed(true);
+
+        if(coupon.getBookQuantity() == null) {
+            order.setTotalPrice(order.getTotalPrice()
+                    .subtract(order.getTotalPrice().multiply(BigDecimal.valueOf(coupon.getDiscount() / 100.0))));
+        } else {
+            Integer bookQuantity = coupon.getBookQuantity();
+            order.getBooks().stream().limit(bookQuantity).forEach(book -> {
+                BigDecimal discount = book.getPrice().multiply(BigDecimal.valueOf(coupon.getDiscount() / 100.0));
+                order.setTotalPrice(order.getTotalPrice().subtract(discount));
+            });
+        }
+        orderRepository.save(order);
+    }
+
     private Order createOrderForCurrentUser(Long currentUserId) {
         Order newOrder = new Order();
         newOrder.setStatus(orderStatusRepository.findByName("SAVED"));
@@ -197,7 +215,8 @@ public class OrderServiceImpl implements OrderService {
         mailContext.put("status", order.getStatus().getName());
         mailContext.put("username", order.getBuyer().getUsername());
 
-        mailSender.sendEmail(order.getBuyer().getEmail(), "GoldenBook order", MailSenderImpl.MailType.ORDER_STATUS_UPDATE, mailContext);
+        mailSender.sendEmail(order.getBuyer().getEmail(), "GoldenBook order",
+                                MailSenderImpl.MailType.ORDER_STATUS_UPDATE, mailContext);
     }
 
     private void sendOrderConfirmationEmail(Integer orderId, String attachmentFile) throws MessagingException {
@@ -208,17 +227,20 @@ public class OrderServiceImpl implements OrderService {
         mailContext.put("attachmentFile", attachmentFile);
         mailContext.put("username", order.getBuyer().getUsername());
 
-        mailSender.sendEmail(order.getBuyer().getEmail(), "GoldenBook order confirmed", MailSenderImpl.MailType.ORDER_CONFIRMED, mailContext);
+        mailSender.sendEmail(order.getBuyer().getEmail(), "GoldenBook order confirmed",
+                                MailSenderImpl.MailType.ORDER_CONFIRMED, mailContext);
     }
 
     private String generateInvoice(Integer orderId) throws FileNotFoundException, JRException {
         List<Book> bookList = new ArrayList<Book>();
         Map<String, Object> parameter = new HashMap<String, Object>();
 
-        bookList.addAll(orderRepository.findOrderById(orderId).getBooks());
+        Order order = orderRepository.findOrderById(orderId);
+        bookList.addAll(order.getBooks());
 
         parameter.put("dataSource", new JRBeanCollectionDataSource(bookList));
         parameter.put("orderId", orderId);
+        parameter.put("orderTotalPrice", order.getTotalPrice());
 
         String outFileName = invoiceRepository + "GoldenBookInvoice" + orderId + ".pdf";
         pdfGenerator.createPdfFile("src/main/resources/templates/invoice-template.jrxml", outFileName, parameter);

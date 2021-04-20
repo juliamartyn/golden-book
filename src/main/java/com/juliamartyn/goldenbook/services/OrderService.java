@@ -20,4 +20,5 @@ public interface OrderService {
     List<OrderResponse> findPreOrdersByBuyerId(Long id);
     void cancelPreOrder(Integer orderId);
     void confirmPreOrder(Integer orderId) throws MessagingException, FileNotFoundException, JRException;
+    void applyCouponToOrder(Integer orderId, Integer couponId);
 }

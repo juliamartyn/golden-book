@@ -109,4 +109,11 @@ public class OrderController {
         orderService.cancelPreOrder(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
+    @PatchMapping("/{orderId}/apply-coupon/{couponId}")
+    public ResponseEntity<Void> applyCouponToOrder(@PathVariable Integer orderId, @PathVariable Integer couponId) {
+        orderService.applyCouponToOrder(orderId, couponId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

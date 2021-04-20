@@ -2,6 +2,7 @@ package com.juliamartyn.goldenbook.services.impl;
 
 import com.juliamartyn.goldenbook.controllers.request.CreateUserRequest;
 import com.juliamartyn.goldenbook.controllers.request.RegisterUserRequest;
+import com.juliamartyn.goldenbook.controllers.response.UserPageableResponse;
 import com.juliamartyn.goldenbook.controllers.response.UserResponse;
 import com.juliamartyn.goldenbook.entities.Role;
 import com.juliamartyn.goldenbook.entities.User;
@@ -11,6 +12,10 @@ import com.juliamartyn.goldenbook.repository.UserRepository;
 import com.juliamartyn.goldenbook.services.UserService;
 import com.juliamartyn.goldenbook.services.converters.UserConverter;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -86,5 +91,13 @@ public class UserServiceImpl implements UserService {
     public UserResponse findUserById(Long id) {
         return userConverter.of(userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User with id " + id + " not found")));
+    }
+
+    @Override
+    public UserPageableResponse findPageableUsers(int pageNo, int pageSize) {
+        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by("id").descending());
+        Page<User> pagedResult = userRepository.findAll(paging);
+
+        return userConverter.toUserPageableResponse(pagedResult);
     }
 }
