@@ -1,0 +1,18 @@
+package com.juliamartyn.goldenbook.controllers.request;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.math.BigDecimal;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class ReadAndReturnCreateRequest {
+
+    private Integer bookId;
+    private BigDecimal pricePerDay;
+}
