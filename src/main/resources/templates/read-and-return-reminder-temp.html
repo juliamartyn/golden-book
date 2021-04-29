@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<div class="wrapper" style="width:800px;">
+    <div style="font-family: 'Segoe UI'; background-color: #343a40; height: 50px;">
+        <span style="font-size: 1.25rem; color: #FFC107; padding-left:20px;">GoldenBook</span>
+    </div>
+    <div style="margin:0; padding:0; border: 2px solid #ffc107;">
+        <div  style="text-align: center;">
+            <h1 th:text="${'HELLO, ' + username}" style="color: #FFC107"></h1>
+            <div style="font-size: 25px;">
+                <p th:text="${ daysNumber + ' days left until the end of the rent of book -' + book + '-'}"></p>
+                <p style="font-size: 12px;">Please, don't forget to return the book.</p>
+            </div>
+            <div>Regards, GoldenBook Team.</div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
