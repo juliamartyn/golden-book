@@ -30,8 +30,6 @@ public class Book {
 
     private String title;
 
-    private String author;
-
     private byte[] image;
 
     private String description;
@@ -41,6 +39,10 @@ public class Book {
     private Integer quantity;
 
     private LocalDate startSaleDate;
+
+    @ManyToOne
+    @JoinColumn(name = "author_id",  referencedColumnName = "id")
+    private Author author;
 
     @ManyToOne
     @JoinColumn(name = "category_id",  referencedColumnName = "id")
