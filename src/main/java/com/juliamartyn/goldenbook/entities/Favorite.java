@@ -40,7 +40,8 @@ public class Favorite {
     private FavoriteType type;
 
     public enum FavoriteType {
-        CATEGORY
+        CATEGORY,
+        AUTHOR
     }
 
 }
