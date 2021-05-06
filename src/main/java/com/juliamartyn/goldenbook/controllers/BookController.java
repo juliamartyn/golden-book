@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.MessagingException;
 import java.util.List;
 
 
@@ -41,7 +42,7 @@ public class BookController {
     @PreAuthorize("hasAuthority('ROLE_SELLER') OR hasAuthority('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<BookResponse> create(@RequestPart(value = "book") String book,
-                                               @RequestPart(value = "file",  required = false) MultipartFile file) throws JsonProcessingException {
+                                               @RequestPart(value = "file",  required = false) MultipartFile file) throws JsonProcessingException, MessagingException {
         BookRequest request = objectMapper.readValue(book, BookRequest.class);
         return new ResponseEntity<>(bookService.create(request, file), HttpStatus.CREATED);
     }
