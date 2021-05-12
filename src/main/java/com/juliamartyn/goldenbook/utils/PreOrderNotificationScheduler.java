@@ -1,12 +1,12 @@
 package com.juliamartyn.goldenbook.utils;
 
+import com.juliamartyn.goldenbook.entities.Book;
 import com.juliamartyn.goldenbook.entities.Order;
 import com.juliamartyn.goldenbook.entities.User;
 import com.juliamartyn.goldenbook.repository.OrderRepository;
 import com.juliamartyn.goldenbook.services.MailSender;
 import com.juliamartyn.goldenbook.services.impl.MailSenderImpl;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -27,10 +27,11 @@ public class PreOrderNotificationScheduler {
         if (!PreOrdersWithStartSellingTodayBooks.isEmpty()) {
             for (Order order : PreOrdersWithStartSellingTodayBooks) {
                 User buyer = order.getBuyer();
-                String book = order.getBooks().get(0).getTitle() + " " + order.getBooks().get(0).getAuthor();
+                Book book = order.getOrderBooks().stream().findFirst().get().getBook();
+                String bookTitle = book.getTitle() + " " + book.getAuthor();
 
                 mailSender.sendEmail(buyer.getEmail(), "Pre-Ordered book is available now",
-                        MailSenderImpl.MailType.BOOK_AVAILABLE, Map.of("username", buyer.getUsername(), "book", book));
+                        MailSenderImpl.MailType.BOOK_AVAILABLE, Map.of("username", buyer.getUsername(), "book", bookTitle));
             }
         }
     }

@@ -26,6 +26,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     @Query(value = "update books b set b.price = :price where b.id = :id", nativeQuery = true)
     int updatePrice(Integer id, BigDecimal price);
 
+    @Query(value = "select b.* from books b where b.id = :bookId", nativeQuery = true)
     Book findBookById(Integer bookId);
 
     @Query(value = "select books.* from books " +

@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS ebooks (
+    id INT NOT NULL AUTO_INCREMENT,
+    file_reference VARCHAR(255) DEFAULT NULL,
+    price DECIMAL(10,2) DEFAULT NULL,
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE books ADD COLUMN ebook_id INT DEFAULT NULL;
+
+ALTER TABLE books ADD INDEX FK_books_ebooks (ebook_id ASC) VISIBLE;
+
+ALTER TABLE books ADD CONSTRAINT FK_books_ebooks FOREIGN KEY (ebook_id) REFERENCES ebooks (id);

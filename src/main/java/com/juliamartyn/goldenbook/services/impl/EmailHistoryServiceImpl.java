@@ -1,6 +1,7 @@
 package com.juliamartyn.goldenbook.services.impl;
 
 import com.juliamartyn.goldenbook.controllers.response.EmailHistoryPageableResponse;
+import com.juliamartyn.goldenbook.entities.Book;
 import com.juliamartyn.goldenbook.entities.EmailHistory;
 import com.juliamartyn.goldenbook.entities.Order;
 import com.juliamartyn.goldenbook.entities.User;
@@ -59,7 +60,8 @@ public class EmailHistoryServiceImpl implements EmailHistoryService {
                 mailContext.put("attachmentFile", invoiceRepository + "GoldenBookInvoice" + order.getId() + ".pdf");
                 break;
             case "BOOK_AVAILABLE":
-                mailContext.put("book", order.getBooks().get(0).getTitle() + " " + order.getBooks().get(0).getAuthor());
+                Book book = order.getOrderBooks().stream().findFirst().get().getBook();
+                mailContext.put("book", book.getTitle() + " " + book.getAuthor());
                 break;
             case "ORDER_STATUS_UPDATE":
                 mailContext.put("status", order.getStatus().getName());

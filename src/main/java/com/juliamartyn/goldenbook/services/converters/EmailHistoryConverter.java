@@ -32,7 +32,9 @@ public class EmailHistoryConverter {
         map.setBuyer(emailHistory.getOrder().getBuyer().getEmail());
 
         if(emailHistory.getEmailType().toString().equals("BOOK_AVAILABLE")){
-            Boolean availableToResend = emailHistory.getOrder().getBooks().stream().allMatch(book -> book.getStartSaleDate().isAfter(LocalDate.now()));
+            Boolean availableToResend = emailHistory.getOrder().getOrderBooks().stream()
+                    .map(orderBook -> orderBook.getBook())
+                    .allMatch(book -> book.getStartSaleDate().isAfter(LocalDate.now()));
             map.setAvailableToResend(availableToResend);
         }
         return map;

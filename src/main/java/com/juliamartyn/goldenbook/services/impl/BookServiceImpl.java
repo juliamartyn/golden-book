@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -53,7 +52,6 @@ public class BookServiceImpl implements BookService {
                            DiscountRepository discountRepository,
                            AmazonS3ClientService amazonS3ClientService,
                            EBookRepository eBookRepository,
-                           DiscountRepository discountRepository,
                            MailSender mailSender,
                            FavoriteRepository favoriteRepository,
                            BookCategoryRepository bookCategoryRepository) {
@@ -76,9 +74,9 @@ public class BookServiceImpl implements BookService {
             e.printStackTrace();
         }
 
-        if(!fileEBook.isEmpty()){
+        if(fileEBook != null){
             EBook eBook = EBook.builder()
-                    .fileReference(uploadEBookToS3(fileEBook))
+                    .fileReference(amazonS3ClientService.uploadFileToS3(fileEBook))
                     .price(bookRequest.getEBookPrice())
                     .build();
             book.setEbook(eBookRepository.save(eBook));
@@ -155,25 +153,12 @@ public class BookServiceImpl implements BookService {
     @Override
     public void addEBook(Integer bookId, MultipartFile fileEBook, EBookRequest eBookRequest){
         EBook eBook = EBook.builder()
-                .fileReference(uploadEBookToS3(fileEBook))
+                .fileReference(amazonS3ClientService.uploadFileToS3(fileEBook))
                 .price(eBookRequest.getPrice())
                 .build();
 
         eBook = eBookRepository.save(eBook);
         bookRepository.updateEBook(bookId, eBook.getId());
-    }
-
-    private String uploadEBookToS3(MultipartFile file) {
-        String[] split = file.getOriginalFilename().split("\\.");
-        String extension = split[split.length - 1];
-        String fileReference = UUID.randomUUID().toString().toLowerCase() + "." + extension;
-        try {
-            amazonS3ClientService.upload(amazonS3ClientService.getBucketName(),
-                    amazonS3ClientService.getFolderName() + "/" + fileReference, file.getInputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return fileReference;
     }
 
     private void sendNewFromFavoriteEmailNotification(Book book) throws MessagingException {

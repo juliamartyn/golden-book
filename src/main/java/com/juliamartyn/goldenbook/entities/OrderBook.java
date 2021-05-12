@@ -1,6 +1,11 @@
 package com.juliamartyn.goldenbook.entities;
 
+import com.sun.istack.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -9,30 +14,35 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
 @Getter
+@Builder
 @Entity
-@Table(name = "email_history")
-public class EmailHistory {
+@Table(name = "orders_books")
+public class OrderBook {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
-    private EmailType emailType;
+    private BookType bookType;
 
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "book_id",  referencedColumnName = "id")
+    private Book book;
+
+    @ManyToOne
     @JoinColumn(name = "order_id",  referencedColumnName = "id")
     private Order order;
 
-    public enum EmailType{
-        ORDER_STATUS_UPDATE,
-        ORDER_CONFIRMED,
-        BOOK_AVAILABLE,
-        LAST_RENT_DAY,
-        RENT_DATE_REMINDER
+    public enum BookType{
+        PAPER,
+        ELECTRONIC
     }
-
 }

@@ -56,7 +56,8 @@ public class MailSenderImpl  implements MailSender {
         BOOK_AVAILABLE("book-available-temp"),
         LAST_RENT_DAY("last-rent-day-temp"),
         RENT_DATE_REMINDER("read-and-return-reminder-temp"),
-        NEW_AT_FAVORITE("favorite-new-book-temp");
+        NEW_AT_FAVORITE("favorite-new-book-temp"),
+        E_ORDER("e-order-temp");
 
         private String template;
 

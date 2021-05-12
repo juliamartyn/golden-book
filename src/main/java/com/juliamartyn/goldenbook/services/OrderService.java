@@ -17,6 +17,7 @@ public interface OrderService {
     void deleteBookFromCart(Integer orderId, Integer bookId);
     void confirmOrder(Integer orderId) throws MessagingException, FileNotFoundException, JRException;
     void preOrder(Integer bookId, Long currentUserId);
+    void orderEBook(Integer bookId, Long currentUserId) throws FileNotFoundException, JRException, MessagingException;
     List<OrderResponse> findPreOrdersByBuyerId(Long id);
     void cancelPreOrder(Integer orderId);
     void confirmPreOrder(Integer orderId) throws MessagingException, FileNotFoundException, JRException;

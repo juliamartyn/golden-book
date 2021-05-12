@@ -19,12 +19,11 @@ public class OrderConverter {
     public OrderResponse of(Order order){
         OrderResponse map =  modelMapper.map(order, OrderResponse.class);
 
-        map.setBooks(order.getBooks().stream()
-                            .map(bookConverter::of)
-                            .collect(Collectors.toList()));
+        map.setBooks(order.getOrderBooks().stream()
+                .map(orderBook -> bookConverter.of(orderBook.getBook()))
+                .collect(Collectors.toList()));
 
         map.setStatus(order.getStatus().getName());
         return map;
     }
-
 }
