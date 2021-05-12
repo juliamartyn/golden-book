@@ -1,0 +1,16 @@
+CREATE TABLE IF NOT EXISTS authors (
+    id INT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(255) DEFAULT NULL,
+    surname VARCHAR(255) DEFAULT NULL,
+    PRIMARY KEY (id)
+);
+
+
+ALTER TABLE books DROP COLUMN author;
+
+ALTER TABLE books ADD COLUMN author_id INT DEFAULT NULL;
+
+ALTER TABLE books ADD INDEX FK_books_authors (author_id ASC) VISIBLE;
+
+ALTER TABLE books ADD CONSTRAINT FK_books_authors FOREIGN KEY (author_id) REFERENCES authors (id);
+
