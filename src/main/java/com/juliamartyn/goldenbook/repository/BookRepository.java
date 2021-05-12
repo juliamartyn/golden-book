@@ -1,8 +1,6 @@
 package com.juliamartyn.goldenbook.repository;
 
 import com.juliamartyn.goldenbook.entities.Book;
-import com.juliamartyn.goldenbook.entities.Discount;
-import com.juliamartyn.goldenbook.entities.EmailHistory;
 import com.juliamartyn.goldenbook.services.impl.reports.SoldBooksReportValues;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -50,4 +48,9 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     Page<Book> findAll(Pageable pageable);
 
     List<Book> findBooksByDiscountId(Integer discountId);
+
+    @Modifying
+    @Transactional
+    @Query(value = "update books b set b.ebook_id = :eBookId where b.id = :id", nativeQuery = true)
+    int updateEBook(Integer id, Integer eBookId);
 }

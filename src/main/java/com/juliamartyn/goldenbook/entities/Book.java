@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -51,4 +52,8 @@ public class Book {
     private Discount discount;
 
     private BigDecimal priceWithDiscount;
+
+    @OneToOne
+    @JoinColumn(name = "ebook_id",  referencedColumnName = "id")
+    private EBook ebook;
 }

@@ -6,20 +6,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookRequest {
-
-    private String title;
-    private String author;
-    private String description;
-    private String category;
+public class EBookRequest {
     private BigDecimal price;
-    private Integer quantity;
-    private LocalDate startSaleDate;
-    private BigDecimal eBookPrice;
 }
