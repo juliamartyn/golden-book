@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.MessagingException;
 import java.util.List;
 
 
@@ -43,7 +44,7 @@ public class BookController {
     @PostMapping
     public ResponseEntity<BookResponse> create(@RequestPart(value = "book") String book,
                                                @RequestPart(value = "image",  required = false) MultipartFile image,
-                                               @RequestPart(value = "eBookFile",  required = false) MultipartFile eBookFile) throws JsonProcessingException {
+                                               @RequestPart(value = "eBookFile",  required = false) MultipartFile eBookFile) throws JsonProcessingException, MessagingException {
         BookRequest request = objectMapper.readValue(book, BookRequest.class);
         return new ResponseEntity<>(bookService.create(request, image, eBookFile), HttpStatus.CREATED);
     }
