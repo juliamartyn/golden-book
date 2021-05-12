@@ -46,7 +46,7 @@ public class EmailHistoryServiceImpl implements EmailHistoryService {
     @Override
     public void resendEmail(Integer emailHistoryItemId) throws MessagingException {
         EmailHistory emailHistoryItem = emailHistoryRepository.findEmailHistoryById(emailHistoryItemId);
-        String emailType = emailHistoryItem.getEmailType();
+        String emailType = emailHistoryItem.getEmailType().toString();
         Order order = emailHistoryItem.getOrder();
         User buyer = emailHistoryItem.getOrder().getBuyer();
 
