@@ -8,10 +8,19 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -42,13 +51,10 @@ public class Order {
     @JoinColumn(name = "buyer_id",  referencedColumnName = "id")
     private User buyer;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "orders_books",
-            joinColumns = @JoinColumn(name = "order_id"),
-            inverseJoinColumns = @JoinColumn(name = "book_id"))
-    private List<Book> books;
-
     @OneToOne
     @JoinColumn(name = "coupon_id",  referencedColumnName = "id")
     private Coupon coupon;
+
+    @OneToMany(mappedBy = "order")
+    private Set<OrderBook> orderBooks;
 }

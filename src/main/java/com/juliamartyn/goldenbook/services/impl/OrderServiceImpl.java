@@ -4,9 +4,11 @@ import com.juliamartyn.goldenbook.controllers.response.OrderResponse;
 import com.juliamartyn.goldenbook.entities.Book;
 import com.juliamartyn.goldenbook.entities.Coupon;
 import com.juliamartyn.goldenbook.entities.Order;
+import com.juliamartyn.goldenbook.entities.OrderBook;
 import com.juliamartyn.goldenbook.exception.NotFoundException;
 import com.juliamartyn.goldenbook.repository.BookRepository;
 import com.juliamartyn.goldenbook.repository.CouponRepository;
+import com.juliamartyn.goldenbook.repository.OrderBookRepository;
 import com.juliamartyn.goldenbook.repository.OrderRepository;
 import com.juliamartyn.goldenbook.repository.OrderStatusRepository;
 import com.juliamartyn.goldenbook.repository.UserRepository;
@@ -24,8 +26,10 @@ import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,11 +46,12 @@ public class OrderServiceImpl implements OrderService {
     private final CouponRepository couponRepository;
     private final MailSender mailSender;
     private final PdfGenerator pdfGenerator;
+    private final OrderBookRepository orderBookRepository;
 
     public OrderServiceImpl(OrderRepository orderRepository, OrderConverter orderConverter,
                             BookRepository bookRepository, OrderStatusRepository orderStatusRepository,
                             UserRepository userRepository, CouponRepository couponRepository,
-                            MailSender mailSender, PdfGenerator pdfGenerator) {
+                            MailSender mailSender, PdfGenerator pdfGenerator, OrderBookRepository orderBookRepository) {
         this.orderRepository = orderRepository;
         this.orderConverter = orderConverter;
         this.bookRepository = bookRepository;
@@ -55,6 +60,7 @@ public class OrderServiceImpl implements OrderService {
         this.couponRepository = couponRepository;
         this.mailSender = mailSender;
         this.pdfGenerator = pdfGenerator;
+        this.orderBookRepository = orderBookRepository;
     }
 
     @Override
@@ -63,19 +69,32 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findOrderWithStatusSavedByBuyerId(currentUserId);
 
         if(order != null) {
-            List<Book> bookList = new ArrayList<>(order.getBooks());
-            bookList.add(newBook);
-            order.setBooks(bookList);
+            Set<OrderBook> orderBookSet = order.getOrderBooks();
 
+            OrderBook orderBook = OrderBook.builder()
+                    .book(newBook)
+                    .order(order)
+                    .bookType(OrderBook.BookType.PAPER)
+                    .build();
+            orderBookRepository.save(orderBook);
+            orderBookSet.add(orderBook);
+            order.setOrderBooks(orderBookSet);
             order.setTotalPrice(order.getTotalPrice().add(newBook.getPriceWithDiscount()));
 
             return orderConverter.of(orderRepository.save(order));
         } else {
             Order newOrder = createOrderForCurrentUser(currentUserId);
-            List<Book> bookList = new ArrayList<>();
-            bookList.add(newBook);
-            newOrder.setBooks(bookList);
+            Set<OrderBook> orderBookSet = new HashSet<>();
 
+            OrderBook orderBook = OrderBook.builder()
+                    .book(newBook)
+                    .order(newOrder)
+                    .bookType(OrderBook.BookType.PAPER)
+                    .build();
+            orderBookRepository.save(orderBook);
+
+            orderBookSet.add(orderBook);
+            newOrder.setOrderBooks(orderBookSet);
             newOrder.setTotalPrice(newBook.getPriceWithDiscount());
 
             return orderConverter.of(orderRepository.save(newOrder));
@@ -116,13 +135,13 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findOrderById(orderId);
         Book bookToDelete = bookRepository.findBookById(bookId);
 
-        order.getBooks().remove(bookToDelete);
-
-        if(bookToDelete.getPriceWithDiscount() == null){
-            orderRepository.updateTotalPrice(orderId, order.getTotalPrice().subtract(bookToDelete.getPrice()));
-        } else {
-            orderRepository.updateTotalPrice(orderId, order.getTotalPrice().subtract(bookToDelete.getPriceWithDiscount()));
+        for (OrderBook orderBook : order.getOrderBooks()) {
+            if (orderBook.getBook().getId().equals(bookId)) {
+                orderBookRepository.delete(orderBook);
+                order.getOrderBooks().remove(orderBook);
+            }
         }
+        orderRepository.updateTotalPrice(orderId, order.getTotalPrice().subtract(bookToDelete.getPrice()));
 
         orderRepository.save(order);
     }
@@ -131,8 +150,8 @@ public class OrderServiceImpl implements OrderService {
     public void confirmOrder(Integer orderId) throws MessagingException, FileNotFoundException, JRException {
         changeOrderStatusToORDERED(orderId);
 
-        orderRepository.findOrderById(orderId).getBooks()
-                .forEach(book -> bookRepository.updateQuantity(book.getId(), book.getQuantity() - 1));
+        orderRepository.findOrderById(orderId).getOrderBooks().forEach(orderBook ->
+                bookRepository.updateQuantity(orderBook.getBook().getId(), orderBook.getBook().getQuantity() - 1));
 
         sendOrderConfirmationEmail(orderId, generateInvoice(orderId));
     }
@@ -144,11 +163,41 @@ public class OrderServiceImpl implements OrderService {
         preOrder.setBuyer(userRepository.findUserById(currentUserId));
 
         Book book = bookRepository.findBookById(bookId);
-        preOrder.setBooks(List.of(book));
         preOrder.setTotalPrice(book.getPrice());
         bookRepository.updateQuantity(bookId, book.getQuantity() - 1);
 
         orderRepository.save(preOrder);
+
+        OrderBook orderBook = OrderBook.builder()
+                .book(book)
+                .order(preOrder)
+                .bookType(OrderBook.BookType.PAPER)
+                .build();
+        orderBookRepository.save(orderBook);
+    }
+
+    @Override
+    public void orderEBook(Integer bookId, Long currentUserId) throws FileNotFoundException, JRException, MessagingException {
+        Book book = bookRepository.findBookById(bookId);
+        Order order = Order.builder().status(orderStatusRepository.findByName("E_ORDERED"))
+                .buyer(userRepository.findUserById(currentUserId))
+                .totalPrice(book.getEbook().getPrice())
+                .build();
+        orderRepository.save(order);
+
+        OrderBook orderBook = OrderBook.builder()
+                .book(book)
+                .order(order)
+                .bookType(OrderBook.BookType.ELECTRONIC)
+                .build();
+        orderBookRepository.save(orderBook);
+
+        Set<OrderBook> orderBookSet = new HashSet<>();
+        orderBookSet.add(orderBook);
+        order.setOrderBooks(orderBookSet);
+        orderRepository.save(order);
+
+        sendOrderConfirmationEmail(order.getId(), generateEBookInvoice(order.getId()));
     }
 
     @Override
@@ -162,7 +211,7 @@ public class OrderServiceImpl implements OrderService {
     public void cancelPreOrder(Integer orderId) {
         Order order = orderRepository.findOrderById(orderId);
         if(order.getStatus().getName().equals("PREORDERED")) {
-            order.getBooks().forEach(book -> bookRepository.updateQuantity(book.getId(), book.getQuantity() + 1));
+            order.getOrderBooks().forEach(orderBook -> bookRepository.updateQuantity(orderBook.getBook().getId(), orderBook.getBook().getQuantity() + 1));
             orderRepository.deleteById(orderId);
         }
     }
@@ -186,8 +235,8 @@ public class OrderServiceImpl implements OrderService {
                     .subtract(order.getTotalPrice().multiply(BigDecimal.valueOf(coupon.getDiscount() / 100.0))));
         } else {
             Integer bookQuantity = coupon.getBookQuantity();
-            order.getBooks().stream().limit(bookQuantity).forEach(book -> {
-                BigDecimal discount = book.getPrice().multiply(BigDecimal.valueOf(coupon.getDiscount() / 100.0));
+            order.getOrderBooks().stream().limit(bookQuantity).forEach(orderBook -> {
+                BigDecimal discount = orderBook.getBook().getPrice().multiply(BigDecimal.valueOf(coupon.getDiscount() / 100.0));
                 order.setTotalPrice(order.getTotalPrice().subtract(discount));
             });
         }
@@ -232,11 +281,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private String generateInvoice(Integer orderId) throws FileNotFoundException, JRException {
-        List<Book> bookList = new ArrayList<Book>();
-        Map<String, Object> parameter = new HashMap<String, Object>();
+        List<Book> bookList = new ArrayList<>();
+        Map<String, Object> parameter = new HashMap<>();
 
         Order order = orderRepository.findOrderById(orderId);
-        bookList.addAll(order.getBooks());
+        order.getOrderBooks().forEach(orderBook -> bookList.add(orderBook.getBook()));
 
         parameter.put("dataSource", new JRBeanCollectionDataSource(bookList));
         parameter.put("orderId", orderId);
@@ -244,6 +293,22 @@ public class OrderServiceImpl implements OrderService {
 
         String outFileName = invoiceRepository + "GoldenBookInvoice" + orderId + ".pdf";
         pdfGenerator.createPdfFile("src/main/resources/templates/invoice-template.jrxml", outFileName, parameter);
+
+        return outFileName;
+    }
+
+    private String generateEBookInvoice(Integer orderId) throws FileNotFoundException, JRException {
+        Map<String, Object> parameter = new HashMap<>();
+        Order order = orderRepository.findOrderById(orderId);
+        Book book = order.getOrderBooks().stream().findFirst().get().getBook();
+
+        parameter.put("orderId", orderId);
+        parameter.put("title", book.getTitle());
+        parameter.put("author", book.getAuthor().getName() + " " + book.getAuthor().getSurname());
+        parameter.put("price", book.getEbook().getPrice());
+
+        String outFileName = invoiceRepository + "GoldenBookInvoice" + orderId + ".pdf";
+        pdfGenerator.createPdfFile("src/main/resources/templates/e-book-invoice-template.jrxml", outFileName, parameter);
 
         return outFileName;
     }

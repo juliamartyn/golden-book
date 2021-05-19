@@ -2,20 +2,24 @@ package com.juliamartyn.goldenbook.services.impl;
 
 import com.juliamartyn.goldenbook.controllers.request.BookRequest;
 import com.juliamartyn.goldenbook.controllers.request.DiscountRequest;
+import com.juliamartyn.goldenbook.controllers.request.EBookRequest;
 import com.juliamartyn.goldenbook.controllers.response.BookPageableResponse;
 import com.juliamartyn.goldenbook.controllers.response.BookResponse;
 import com.juliamartyn.goldenbook.entities.Book;
 import com.juliamartyn.goldenbook.entities.Discount;
+import com.juliamartyn.goldenbook.entities.EBook;
 import com.juliamartyn.goldenbook.entities.Favorite;
 import com.juliamartyn.goldenbook.entities.User;
 import com.juliamartyn.goldenbook.exception.NotFoundException;
 import com.juliamartyn.goldenbook.repository.BookCategoryRepository;
 import com.juliamartyn.goldenbook.repository.BookRepository;
 import com.juliamartyn.goldenbook.repository.DiscountRepository;
+import com.juliamartyn.goldenbook.repository.EBookRepository;
 import com.juliamartyn.goldenbook.repository.FavoriteRepository;
 import com.juliamartyn.goldenbook.services.BookService;
 import com.juliamartyn.goldenbook.services.MailSender;
 import com.juliamartyn.goldenbook.services.converters.BookConverter;
+import com.juliamartyn.goldenbook.services.s3.AmazonS3ClientService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -37,28 +41,45 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final BookConverter bookConverter;
     private final DiscountRepository discountRepository;
+    private final AmazonS3ClientService amazonS3ClientService;
+    private final EBookRepository eBookRepository;
     private final MailSender mailSender;
     private final FavoriteRepository favoriteRepository;
     private final BookCategoryRepository bookCategoryRepository;
 
     public BookServiceImpl(BookRepository bookRepository,
                            BookConverter bookConverter,
-                           DiscountRepository discountRepository, MailSender mailSender, FavoriteRepository favoriteRepository, BookCategoryRepository bookCategoryRepository) {
+                           DiscountRepository discountRepository,
+                           AmazonS3ClientService amazonS3ClientService,
+                           EBookRepository eBookRepository,
+                           MailSender mailSender,
+                           FavoriteRepository favoriteRepository,
+                           BookCategoryRepository bookCategoryRepository) {
         this.bookRepository = bookRepository;
         this.bookConverter = bookConverter;
         this.discountRepository = discountRepository;
+        this.amazonS3ClientService = amazonS3ClientService;
+        this.eBookRepository = eBookRepository;
         this.mailSender = mailSender;
         this.favoriteRepository = favoriteRepository;
         this.bookCategoryRepository = bookCategoryRepository;
     }
 
     @Override
-    public BookResponse create(BookRequest bookRequest, MultipartFile file) throws MessagingException {
+    public BookResponse create(BookRequest bookRequest, MultipartFile image, MultipartFile fileEBook) throws MessagingException {
         Book book = bookConverter.of(bookRequest);
         try {
-            book.setImage(file.getBytes());
+            book.setImage(image.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
+        }
+
+        if(fileEBook != null){
+            EBook eBook = EBook.builder()
+                    .fileReference(amazonS3ClientService.uploadFileToS3(fileEBook))
+                    .price(bookRequest.getEBookPrice())
+                    .build();
+            book.setEbook(eBookRepository.save(eBook));
         }
 
         sendNewFromFavoriteEmailNotification(book);
@@ -127,6 +148,17 @@ public class BookServiceImpl implements BookService {
                             .multiply(BigDecimal.valueOf(book.getDiscount().getDiscountPercent() / 100.0))));
                     bookRepository.save(book);
                 });
+    }
+
+    @Override
+    public void addEBook(Integer bookId, MultipartFile fileEBook, EBookRequest eBookRequest){
+        EBook eBook = EBook.builder()
+                .fileReference(amazonS3ClientService.uploadFileToS3(fileEBook))
+                .price(eBookRequest.getPrice())
+                .build();
+
+        eBook = eBookRepository.save(eBook);
+        bookRepository.updateEBook(bookId, eBook.getId());
     }
 
     private void sendNewFromFavoriteEmailNotification(Book book) throws MessagingException {

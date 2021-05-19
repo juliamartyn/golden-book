@@ -1,38 +1,37 @@
 package com.juliamartyn.goldenbook.entities;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import java.time.LocalDate;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
 @Getter
+@Builder
 @Entity
-@Table(name = "email_history")
-public class EmailHistory {
+@Table(name = "e_orders")
+public class EOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Enumerated(EnumType.STRING)
-    private EmailType emailType;
+    private LocalDate expirationDate;
+
+    private String code;
 
     @OneToOne
     @JoinColumn(name = "order_id",  referencedColumnName = "id")
     private Order order;
-
-    public enum EmailType{
-        ORDER_STATUS_UPDATE,
-        ORDER_CONFIRMED,
-        BOOK_AVAILABLE,
-        LAST_RENT_DAY,
-        RENT_DATE_REMINDER
-    }
-
 }

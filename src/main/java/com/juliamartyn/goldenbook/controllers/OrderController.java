@@ -111,6 +111,14 @@ public class OrderController {
     }
 
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
+    @PostMapping("/e-book/{bookId}")
+    public ResponseEntity<Void> orderEBook(@PathVariable Integer bookId, Authentication authentication) throws FileNotFoundException, MessagingException, JRException {
+        UserPrinciple currentUser = (UserPrinciple) authentication.getPrincipal();
+        orderService.orderEBook(bookId, currentUser.getId());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     @PatchMapping("/{orderId}/apply-coupon/{couponId}")
     public ResponseEntity<Void> applyCouponToOrder(@PathVariable Integer orderId, @PathVariable Integer couponId) {
         orderService.applyCouponToOrder(orderId, couponId);

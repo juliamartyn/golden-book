@@ -6,6 +6,7 @@ import com.juliamartyn.goldenbook.controllers.request.BookPriceRequest;
 import com.juliamartyn.goldenbook.controllers.request.BookQuantityRequest;
 import com.juliamartyn.goldenbook.controllers.request.BookRequest;
 import com.juliamartyn.goldenbook.controllers.request.DiscountRequest;
+import com.juliamartyn.goldenbook.controllers.request.EBookRequest;
 import com.juliamartyn.goldenbook.controllers.response.BookPageableResponse;
 import com.juliamartyn.goldenbook.controllers.response.BookResponse;
 import com.juliamartyn.goldenbook.services.BookService;
@@ -42,9 +43,10 @@ public class BookController {
     @PreAuthorize("hasAuthority('ROLE_SELLER') OR hasAuthority('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<BookResponse> create(@RequestPart(value = "book") String book,
-                                               @RequestPart(value = "file",  required = false) MultipartFile file) throws JsonProcessingException, MessagingException {
+                                               @RequestPart(value = "image",  required = false) MultipartFile image,
+                                               @RequestPart(value = "eBookFile",  required = false) MultipartFile eBookFile) throws JsonProcessingException, MessagingException {
         BookRequest request = objectMapper.readValue(book, BookRequest.class);
-        return new ResponseEntity<>(bookService.create(request, file), HttpStatus.CREATED);
+        return new ResponseEntity<>(bookService.create(request, image, eBookFile), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN') OR hasAuthority('ROLE_SELLER') OR hasAuthority('ROLE_CUSTOMER')")
@@ -96,5 +98,15 @@ public class BookController {
     public ResponseEntity<Void> applyDiscount(@RequestBody DiscountRequest discountRequest){
         bookService.addDiscount(discountRequest);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_SELLER') OR hasAuthority('ROLE_ADMIN')")
+    @PatchMapping("/{id}/add-e-book")
+    public ResponseEntity<Void> addEBook(@PathVariable Integer id,
+                                         @RequestPart(value = "eBook") String ebook,
+                                         @RequestPart(value = "eBookFile") MultipartFile eBookFile) throws JsonProcessingException {
+        EBookRequest request = objectMapper.readValue(ebook, EBookRequest.class);
+        bookService.addEBook(id, eBookFile, request);
+        return new ResponseEntity<>( HttpStatus.OK);
     }
 }

@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 7.9.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sold-books-report-template" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2ec6c357-06bf-463b-be43-53d442aabe14">
+    <property name="template.engine" value="tabular_template"/>
+    <style name="Title" forecolor="#FFFFFF" fontName="Times New Roman" fontSize="50" isBold="false"/>
+    <parameter name="orderId" class="java.lang.Integer"/>
+    <parameter name="title" class="java.lang.String"/>
+    <parameter name="author" class="java.lang.String"/>
+    <parameter name="price" class="java.math.BigDecimal"/>
+    <title>
+        <band height="94" splitType="Stretch">
+            <frame>
+                <reportElement mode="Opaque" x="-20" y="0" width="822" height="65" forecolor="#006699" backcolor="#343A40" uuid="e8bc167b-bf12-4977-b458-b029eaaafdfb"/>
+                <staticText>
+                    <reportElement style="Title" x="0" y="0" width="240" height="65" forecolor="#FFC107" uuid="e1a595c4-b39a-4bde-b6cf-36a6224d2ff6"/>
+                    <textElement textAlignment="Right">
+                        <font fontName="Segoe UI" size="42" isBold="false"/>
+                    </textElement>
+                    <text><![CDATA[GoldenBook]]></text>
+                </staticText>
+                <staticText>
+                    <reportElement x="740" y="23" width="55" height="20" forecolor="#DBD9D9" uuid="c7b52b64-ac45-4020-a4fd-b32c9f8851ab"/>
+                    <textElement>
+                        <font fontName="Segoe UI" size="12"/>
+                    </textElement>
+                    <text><![CDATA[INVOICE]]></text>
+                </staticText>
+            </frame>
+        </band>
+    </title>
+    <detail>
+        <band height="440">
+            <property name="com.jaspersoft.studio.unit.height" value="px"/>
+            <staticText>
+                <reportElement x="654" y="4" width="30" height="17" uuid="77c7d296-7fde-4f30-8689-2cd4b26a9293"/>
+                <textElement>
+                    <font fontName="Segoe UI" size="11"/>
+                </textElement>
+                <text><![CDATA[Date:]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="640" y="21" width="50" height="17" uuid="c322000c-87de-43e3-b94f-0041d92990bf"/>
+                <textElement>
+                    <font fontName="Segoe UI" size="11"/>
+                </textElement>
+                <text><![CDATA[Order #:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="683" y="21" width="80" height="19" uuid="dc241cc5-a924-4fe4-9c83-85657ea3b47e"/>
+                <textElement>
+                    <font fontName="Segoe UI" size="11"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{orderId}]]></textFieldExpression>
+            </textField>
+            <textField pattern="MMM d, yyyy">
+                <reportElement x="684" y="4" width="100" height="13" uuid="a31141aa-b534-49ab-8b3b-4bd4df6e9f79"/>
+                <textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="80" y="262" width="100" height="22" uuid="2c31932c-203b-4e2c-a04e-e63e3c5d9436"/>
+                <textElement>
+                    <font fontName="Segoe UI" size="11" isBold="true" isUnderline="false"/>
+                </textElement>
+                <text><![CDATA[PAYABLE TO]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="80" y="284" width="100" height="30" uuid="15f9204e-cb10-4982-8412-cbd3371089c8"/>
+                <text><![CDATA[Name Surname Address]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="200" y="261" width="100" height="22" uuid="9febf155-4b52-48f1-8fa5-1b6f4d6b0cab"/>
+                <textElement>
+                    <font fontName="Segoe UI" size="11" isBold="true" isUnderline="false"/>
+                </textElement>
+                <text><![CDATA[BANK DETAILS]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="200" y="283" width="136" height="18" uuid="06156d43-5531-4395-a2d7-54d7f94b13b1"/>
+                <text><![CDATA[Name Surname  ]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="200" y="298" width="136" height="18" uuid="01182a9a-6248-43fb-b23b-24093ab7cc80"/>
+                <text><![CDATA[Bank]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="200" y="316" width="136" height="18" uuid="0bf9620c-d246-4dca-a068-57aed1606623"/>
+                <text><![CDATA[Acct. No. xxxx-xxxx-xxxx-xx]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="660" y="261" width="118" height="70" forecolor="rgba(52, 58, 64, 0.64705884)" uuid="4f8f3f41-5140-40b7-82e0-d90e48348250"/>
+                <textElement textAlignment="Right">
+                    <font fontName="Segoe UI" size="26" isUnderline="false"/>
+                </textElement>
+                <text><![CDATA[THANK YOU]]></text>
+            </staticText>
+            <frame>
+                <reportElement mode="Opaque" x="-20" y="400" width="842" height="40" backcolor="#343A40" uuid="4fbd71b1-4306-47af-86b3-3c5c3496f1c4"/>
+                <staticText>
+                    <reportElement x="355" y="14" width="132" height="22" forecolor="#919190" uuid="25c7791f-1306-464e-84e7-dbec8d23e17e"/>
+                    <textElement>
+                        <font fontName="Segoe UI"/>
+                    </textElement>
+                    <text><![CDATA[Regards, GoldenBook Team.]]></text>
+                </staticText>
+            </frame>
+            <frame>
+                <reportElement mode="Opaque" x="121" y="125" width="540" height="30" backcolor="#FFFFCC" uuid="8a69b6b0-8c56-4f6c-9563-7743e505a0f8"/>
+                <staticText>
+                    <reportElement x="0" y="0" width="180" height="30" uuid="20aa357c-c72b-4452-a000-530bd06a4db1"/>
+                    <box>
+                        <pen lineWidth="0.5" lineStyle="Solid" lineColor="#C5C94B"/>
+                    </box>
+                    <textElement textAlignment="Center" verticalAlignment="Middle">
+                        <font fontName="Segoe UI" size="12"/>
+                    </textElement>
+                    <text><![CDATA[Title]]></text>
+                </staticText>
+                <staticText>
+                    <reportElement x="180" y="0" width="180" height="30" uuid="e2376b84-edf0-4ebe-8132-c79eba1dbca1"/>
+                    <box>
+                        <pen lineWidth="0.5" lineColor="#C5C94B"/>
+                    </box>
+                    <textElement textAlignment="Center" verticalAlignment="Middle">
+                        <font fontName="Segoe UI" size="12"/>
+                    </textElement>
+                    <text><![CDATA[Author]]></text>
+                </staticText>
+                <staticText>
+                    <reportElement x="360" y="0" width="180" height="30" uuid="4bafa247-22b6-4e6b-9e67-b24325037eaa"/>
+                    <box>
+                        <pen lineWidth="0.5" lineColor="#C5C94B"/>
+                    </box>
+                    <textElement textAlignment="Center" verticalAlignment="Middle">
+                        <font fontName="Segoe UI" size="12"/>
+                    </textElement>
+                    <text><![CDATA[Price]]></text>
+                </staticText>
+            </frame>
+            <staticText>
+                <reportElement x="121" y="98" width="80" height="24" uuid="003e39f1-0aeb-468b-8f9e-826bd13e1ec3"/>
+                <textElement>
+                    <font fontName="Segoe UI" size="16" isBold="true"/>
+                </textElement>
+                <text><![CDATA[E-BOOK]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="121" y="155" width="180" height="30" uuid="36024441-b600-4ed3-85c7-e39e31c86270"/>
+                <box leftPadding="5">
+                    <pen lineWidth="0.5" lineColor="#C5C94B"/>
+                </box>
+                <textElement textAlignment="Left" verticalAlignment="Middle">
+                    <font fontName="Segoe UI" size="10"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{title}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="301" y="155" width="180" height="30" uuid="85a79bb9-0acc-476a-97b2-6093c0ac58f3"/>
+                <box leftPadding="5">
+                    <pen lineWidth="0.5" lineColor="#C5C94B"/>
+                </box>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="Segoe UI"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{author}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="481" y="155" width="180" height="30" uuid="27140670-601f-4923-939f-e64cda09d53d"/>
+                <box rightPadding="5">
+                    <pen lineWidth="0.5" lineColor="#C5C94B"/>
+                </box>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="Segoe UI"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{price}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+</jasperReport>

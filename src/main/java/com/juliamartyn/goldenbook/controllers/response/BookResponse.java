@@ -13,7 +13,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookResponse {
-
     private Integer id;
     private String title;
     private String author;
@@ -24,4 +23,6 @@ public class BookResponse {
     private LocalDate startSaleDate;
     private byte[] image;
     private BigDecimal priceWithDiscount;
+    private Integer ebookId;
+    private BigDecimal ebookPrice;
 }

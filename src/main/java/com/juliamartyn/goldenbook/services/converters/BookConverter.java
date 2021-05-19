@@ -5,6 +5,7 @@ import com.juliamartyn.goldenbook.controllers.response.BookPageableResponse;
 import com.juliamartyn.goldenbook.controllers.response.BookResponse;
 import com.juliamartyn.goldenbook.entities.Author;
 import com.juliamartyn.goldenbook.entities.Book;
+import com.juliamartyn.goldenbook.entities.EBook;
 import com.juliamartyn.goldenbook.repository.AuthorRepository;
 import com.juliamartyn.goldenbook.repository.BookCategoryRepository;
 import lombok.AllArgsConstructor;
@@ -43,6 +44,12 @@ public class BookConverter {
     public BookResponse of(Book book){
         BookResponse map =  modelMapper.map(book, BookResponse.class);
         map.setCategory(book.getCategory().getName());
+
+        EBook eBook = book.getEbook();
+        if(eBook != null) {
+            map.setEbookId(eBook.getId());
+            map.setEbookPrice(eBook.getPrice());
+        }
 
         Author author = book.getAuthor();
         map.setAuthor(author.getName() + " " + author.getSurname());
