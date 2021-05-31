@@ -16,10 +16,12 @@ import com.juliamartyn.goldenbook.repository.BookRepository;
 import com.juliamartyn.goldenbook.repository.DiscountRepository;
 import com.juliamartyn.goldenbook.repository.EBookRepository;
 import com.juliamartyn.goldenbook.repository.FavoriteRepository;
+import com.juliamartyn.goldenbook.services.AmazonS3ClientService;
 import com.juliamartyn.goldenbook.services.BookService;
 import com.juliamartyn.goldenbook.services.MailSender;
 import com.juliamartyn.goldenbook.services.converters.BookConverter;
-import com.juliamartyn.goldenbook.services.s3.AmazonS3ClientService;
+import lombok.Getter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +39,13 @@ import java.util.stream.Collectors;
 
 @Service
 public class BookServiceImpl implements BookService {
+    @Value("${S3_FOLDER_NAME}")
+    @Getter
+    private String folderName;
+
+    @Value("${S3_BUCKET_NAME}")
+    @Getter
+    private String bucketName;
 
     private final BookRepository bookRepository;
     private final BookConverter bookConverter;
@@ -76,7 +85,7 @@ public class BookServiceImpl implements BookService {
 
         if(fileEBook != null){
             EBook eBook = EBook.builder()
-                    .fileReference(amazonS3ClientService.uploadFileToS3(fileEBook))
+                    .fileReference(amazonS3ClientService.uploadFileToS3(fileEBook, bucketName, folderName))
                     .price(bookRequest.getEBookPrice())
                     .build();
             book.setEbook(eBookRepository.save(eBook));
@@ -153,7 +162,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public void addEBook(Integer bookId, MultipartFile fileEBook, EBookRequest eBookRequest){
         EBook eBook = EBook.builder()
-                .fileReference(amazonS3ClientService.uploadFileToS3(fileEBook))
+                .fileReference(amazonS3ClientService.uploadFileToS3(fileEBook, bucketName, folderName))
                 .price(eBookRequest.getPrice())
                 .build();
 

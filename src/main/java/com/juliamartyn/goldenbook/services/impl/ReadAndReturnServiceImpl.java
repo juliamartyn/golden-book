@@ -2,9 +2,9 @@ package com.juliamartyn.goldenbook.services.impl;
 
 import com.juliamartyn.goldenbook.controllers.request.readAndReturn.ReadAndReturnCreateRequest;
 import com.juliamartyn.goldenbook.controllers.request.readAndReturn.RentBookRequest;
+import com.juliamartyn.goldenbook.controllers.response.BookResponse;
 import com.juliamartyn.goldenbook.controllers.response.readAndReturn.ReadAndReturnBooksResponse;
 import com.juliamartyn.goldenbook.controllers.response.readAndReturn.RentedBooksResponse;
-import com.juliamartyn.goldenbook.entities.Book;
 import com.juliamartyn.goldenbook.entities.User;
 import com.juliamartyn.goldenbook.entities.readAndReturn.ReadAndReturnHistory;
 import com.juliamartyn.goldenbook.exception.NotFoundException;
@@ -13,6 +13,7 @@ import com.juliamartyn.goldenbook.repository.readAndReturn.ReadAndReturnHistoryR
 import com.juliamartyn.goldenbook.repository.readAndReturn.ReadAndReturnTariffRepository;
 import com.juliamartyn.goldenbook.services.MailSender;
 import com.juliamartyn.goldenbook.services.ReadAndReturnService;
+import com.juliamartyn.goldenbook.services.converters.BookConverter;
 import com.juliamartyn.goldenbook.services.converters.ReadAndReturnConverter;
 import com.juliamartyn.goldenbook.utils.PdfGenerator;
 import net.sf.jasperreports.engine.JRException;
@@ -39,15 +40,17 @@ public class ReadAndReturnServiceImpl implements ReadAndReturnService {
     private final ReadAndReturnTariffRepository tariffRepository;
     private final ReadAndReturnHistoryRepository historyRepository;
     private final ReadAndReturnConverter readAndReturnConverter;
+    private final BookConverter bookConverter;
     private final UserRepository userRepository;
     private final PdfGenerator pdfGenerator;
     private final MailSender mailSender;
 
     public ReadAndReturnServiceImpl(ReadAndReturnTariffRepository tariffRepository,
-                                    ReadAndReturnHistoryRepository historyRepository, ReadAndReturnConverter readAndReturnConverter, UserRepository userRepository, PdfGenerator pdfGenerator, MailSender mailSender) {
+                                    ReadAndReturnHistoryRepository historyRepository, ReadAndReturnConverter readAndReturnConverter, BookConverter bookConverter, UserRepository userRepository, PdfGenerator pdfGenerator, MailSender mailSender) {
         this.tariffRepository = tariffRepository;
         this.historyRepository = historyRepository;
         this.readAndReturnConverter = readAndReturnConverter;
+        this.bookConverter = bookConverter;
         this.userRepository = userRepository;
         this.pdfGenerator = pdfGenerator;
         this.mailSender = mailSender;
@@ -104,13 +107,13 @@ public class ReadAndReturnServiceImpl implements ReadAndReturnService {
     }
 
     private String generateInvoice(Integer historyId) throws FileNotFoundException, JRException {
-        List<Book> bookList = new ArrayList<>();
+        List<BookResponse> bookList = new ArrayList<>();
         Map<String, Object> parameter = new HashMap<>();
 
         ReadAndReturnHistory historyItem = historyRepository.findById(historyId).get();
         BigDecimal totalPrice = historyItem.getTariff().getBook().getPrice();
 
-        bookList.add(historyItem.getTariff().getBook());
+        bookList.add(bookConverter.of(historyItem.getTariff().getBook()));
         parameter.put("dataSource", new JRBeanCollectionDataSource(bookList));
         parameter.put("orderId", historyId);
         parameter.put("orderTotalPrice", totalPrice);

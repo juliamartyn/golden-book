@@ -69,7 +69,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findOrderWithStatusSavedByBuyerId(currentUserId);
 
         if(order != null) {
-            Set<OrderBook> orderBookSet = order.getOrderBooks();
+            Set<OrderBook> orderBookSet = new HashSet<>(order.getOrderBooks());
 
             OrderBook orderBook = OrderBook.builder()
                     .book(newBook)

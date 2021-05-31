@@ -7,8 +7,10 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.juliamartyn.goldenbook.services.AmazonS3ClientService;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,20 +19,13 @@ import java.io.IOException;
 import java.util.UUID;
 
 @Service
-public class AmazonS3ClientService {
+@Profile("!test")
+public class AmazonS3ClientServiceImpl implements AmazonS3ClientService {
     @Value("${S3_ACCESSKEY}")
     private String accessKey;
 
     @Value("${S3_SECRETKEY}")
     private String secretKey;
-
-    @Value("${S3_FOLDER_NAME}")
-    @Getter
-    private String folderName;
-
-    @Value("${S3_BUCKET_NAME}")
-    @Getter
-    private String bucketName;
 
     private AmazonS3 s3client;
 
@@ -44,7 +39,8 @@ public class AmazonS3ClientService {
                 .build();
     }
 
-    public String uploadFileToS3(MultipartFile file) {
+    @Override
+    public String uploadFileToS3(MultipartFile file, String bucketName, String folderName) {
         String[] split = file.getOriginalFilename().split("\\.");
         String extension = split[split.length - 1];
         String fileReference = UUID.randomUUID().toString().toLowerCase() + "." + extension;
@@ -56,6 +52,7 @@ public class AmazonS3ClientService {
         return fileReference;
     }
 
+    @Override
     public byte[] downloadFile(String fileReference, String bucketName, String folderName) {
         byte[] bytes = new byte[0];
         try {

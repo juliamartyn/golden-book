@@ -101,7 +101,7 @@ public class BookController {
     }
 
     @PreAuthorize("hasAuthority('ROLE_SELLER') OR hasAuthority('ROLE_ADMIN')")
-    @PatchMapping("/{id}/add-e-book")
+    @PostMapping("/{id}/add-e-book")
     public ResponseEntity<Void> addEBook(@PathVariable Integer id,
                                          @RequestPart(value = "eBook") String ebook,
                                          @RequestPart(value = "eBookFile") MultipartFile eBookFile) throws JsonProcessingException {

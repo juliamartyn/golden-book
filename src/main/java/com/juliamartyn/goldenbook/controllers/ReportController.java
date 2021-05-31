@@ -7,6 +7,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +29,7 @@ public class ReportController {
         this.reportService = reportService;
     }
 
+    @PreAuthorize("hasAuthority('ROLE_SELLER')")
     @PostMapping(path = "/sold-books")
     public ResponseEntity<InputStreamResource> soldBooksReport(@RequestBody SoldBooksReportRequest soldBooksReportRequest) throws FileNotFoundException, JRException {
         reportService.generateSoldBooksReport(soldBooksReportRequest);

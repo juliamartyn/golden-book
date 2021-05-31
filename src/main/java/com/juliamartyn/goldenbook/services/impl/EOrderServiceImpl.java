@@ -4,9 +4,10 @@ import com.juliamartyn.goldenbook.entities.EOrder;
 import com.juliamartyn.goldenbook.entities.Order;
 import com.juliamartyn.goldenbook.repository.EOrderRepository;
 import com.juliamartyn.goldenbook.repository.OrderRepository;
+import com.juliamartyn.goldenbook.services.AmazonS3ClientService;
 import com.juliamartyn.goldenbook.services.EOrderService;
 import com.juliamartyn.goldenbook.services.MailSender;
-import com.juliamartyn.goldenbook.services.s3.AmazonS3ClientService;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,14 @@ import java.util.UUID;
 
 @Service
 public class EOrderServiceImpl implements EOrderService {
+
+    @Value("${S3_FOLDER_NAME}")
+    @Getter
+    private String folderName;
+
+    @Value("${S3_BUCKET_NAME}")
+    @Getter
+    private String bucketName;
 
     @Value("${DOWNLOAD_LINK}")
     private String downloadLink;
@@ -57,6 +66,6 @@ public class EOrderServiceImpl implements EOrderService {
     public byte[] downloadByCode(String code) {
         String file_ref = eOrderRepository.findFileReferenceByEOrderCode(code);
 
-        return amazonS3ClientService.downloadFile(file_ref, amazonS3ClientService.getBucketName(), amazonS3ClientService.getFolderName());
+        return amazonS3ClientService.downloadFile(file_ref, bucketName, folderName);
     }
 }

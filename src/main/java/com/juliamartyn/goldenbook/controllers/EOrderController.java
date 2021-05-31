@@ -28,11 +28,12 @@ public class EOrderController {
 
     @PreAuthorize("hasAuthority('ROLE_SELLER')")
     @PostMapping("orders/{order_id}")
-    public ResponseEntity<Void> createEOrder(@PathVariable Integer order_id) throws MessagingException {
+    public ResponseEntity<Void> sendEOrder(@PathVariable Integer order_id) throws MessagingException {
         eOrderService.sendEOrderEmail(order_id);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_SELLER')")
     @GetMapping("/download/{code}")
     public ResponseEntity<byte[]> downloadByCode(@PathVariable String code){
         byte[] file = eOrderService.downloadByCode(code);

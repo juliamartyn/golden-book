@@ -37,7 +37,7 @@ public class ReadAndReturnController {
 
     @PreAuthorize("hasAuthority('ROLE_SELLER')")
     @PostMapping
-    public ResponseEntity<Void> createUser(@RequestBody ReadAndReturnCreateRequest request) {
+    public ResponseEntity<Void> create(@RequestBody ReadAndReturnCreateRequest request) {
         readAndReturnService.create(request);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

@@ -2,6 +2,7 @@ package com.juliamartyn.goldenbook.services.impl;
 
 import com.juliamartyn.goldenbook.services.MailSender;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -14,6 +15,7 @@ import javax.mail.internet.MimeMessage;
 import java.util.Map;
 
 @Service
+@Profile("!test")
 public class MailSenderImpl  implements MailSender {
 
     private final TemplateEngine templateEngine;
