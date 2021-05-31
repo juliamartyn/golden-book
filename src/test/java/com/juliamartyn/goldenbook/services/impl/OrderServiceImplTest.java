@@ -18,6 +18,7 @@ import com.juliamartyn.goldenbook.repository.OrderRepository;
 import com.juliamartyn.goldenbook.repository.OrderStatusRepository;
 import com.juliamartyn.goldenbook.repository.UserRepository;
 import com.juliamartyn.goldenbook.services.MailSender;
+import com.juliamartyn.goldenbook.services.converters.BookConverter;
 import com.juliamartyn.goldenbook.services.converters.OrderConverter;
 import com.juliamartyn.goldenbook.utils.PdfGenerator;
 import net.sf.jasperreports.engine.JRException;
@@ -62,21 +63,21 @@ class OrderServiceImplTest {
     private MailSender mockMailSender;
     @Mock
     private PdfGenerator mockPdfGenerator;
-
-    private OrderServiceImpl orderServiceImplUnderTest;
-
     @Mock
     private CouponRepository mockCouponRepository;
     @Mock
     private OrderBookRepository mockOrderBookRepository;
+    @Mock
+    private BookConverter mockBookConverter;
 
+    private OrderServiceImpl orderServiceImplUnderTest;
 
     @BeforeEach
     void setUp() {
         orderServiceImplUnderTest = new OrderServiceImpl(mockOrderRepository, mockOrderConverter, mockBookRepository,
                                                             mockOrderStatusRepository, mockUserRepository,
                                                             mockCouponRepository, mockMailSender,
-                                                            mockPdfGenerator , mockOrderBookRepository);
+                                                            mockPdfGenerator , mockOrderBookRepository, mockBookConverter);
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.juliamartyn.goldenbook.services.impl;
 
+import com.juliamartyn.goldenbook.controllers.response.BookResponse;
 import com.juliamartyn.goldenbook.controllers.response.OrderResponse;
 import com.juliamartyn.goldenbook.entities.Book;
 import com.juliamartyn.goldenbook.entities.Coupon;
@@ -14,6 +15,7 @@ import com.juliamartyn.goldenbook.repository.OrderStatusRepository;
 import com.juliamartyn.goldenbook.repository.UserRepository;
 import com.juliamartyn.goldenbook.services.MailSender;
 import com.juliamartyn.goldenbook.services.OrderService;
+import com.juliamartyn.goldenbook.services.converters.BookConverter;
 import com.juliamartyn.goldenbook.services.converters.OrderConverter;
 import com.juliamartyn.goldenbook.utils.PdfGenerator;
 import net.sf.jasperreports.engine.JRException;
@@ -47,11 +49,12 @@ public class OrderServiceImpl implements OrderService {
     private final MailSender mailSender;
     private final PdfGenerator pdfGenerator;
     private final OrderBookRepository orderBookRepository;
+    private final BookConverter bookConverter;
 
     public OrderServiceImpl(OrderRepository orderRepository, OrderConverter orderConverter,
                             BookRepository bookRepository, OrderStatusRepository orderStatusRepository,
                             UserRepository userRepository, CouponRepository couponRepository,
-                            MailSender mailSender, PdfGenerator pdfGenerator, OrderBookRepository orderBookRepository) {
+                            MailSender mailSender, PdfGenerator pdfGenerator, OrderBookRepository orderBookRepository, BookConverter bookConverter) {
         this.orderRepository = orderRepository;
         this.orderConverter = orderConverter;
         this.bookRepository = bookRepository;
@@ -61,6 +64,7 @@ public class OrderServiceImpl implements OrderService {
         this.mailSender = mailSender;
         this.pdfGenerator = pdfGenerator;
         this.orderBookRepository = orderBookRepository;
+        this.bookConverter = bookConverter;
     }
 
     @Override
@@ -281,11 +285,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private String generateInvoice(Integer orderId) throws FileNotFoundException, JRException {
-        List<Book> bookList = new ArrayList<>();
+        List<BookResponse> bookList = new ArrayList<>();
         Map<String, Object> parameter = new HashMap<>();
 
         Order order = orderRepository.findOrderById(orderId);
-        order.getOrderBooks().forEach(orderBook -> bookList.add(orderBook.getBook()));
+        order.getOrderBooks().forEach(orderBook -> bookList.add(bookConverter.of(orderBook.getBook())));
 
         parameter.put("dataSource", new JRBeanCollectionDataSource(bookList));
         parameter.put("orderId", orderId);

@@ -183,7 +183,7 @@ public class BookServiceImpl implements BookService {
 
             if (sendEmail) {
                 mailContext.put("username", recipient.getUsername());
-                mailContext.put("book", book.getTitle() + " " + book.getAuthor());
+                mailContext.put("book", book.getTitle() + " " + book.getAuthor().getName() + book.getAuthor().getSurname());
 
                 mailSender.sendEmail(recipient.getEmail(), "GoldenBook new book",
                         MailSenderImpl.MailType.NEW_AT_FAVORITE, mailContext);

@@ -33,7 +33,7 @@ public class EOrderController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_SELLER')")
+    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     @GetMapping("/download/{code}")
     public ResponseEntity<byte[]> downloadByCode(@PathVariable String code){
         byte[] file = eOrderService.downloadByCode(code);
