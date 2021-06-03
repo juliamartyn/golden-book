@@ -40,12 +40,13 @@ import java.util.stream.Collectors;
 @Service
 public class BookServiceImpl implements BookService {
     @Value("${S3_FOLDER_NAME}")
-    @Getter
     private String folderName;
 
     @Value("${S3_BUCKET_NAME}")
-    @Getter
     private String bucketName;
+
+    @Value("${BOOK_PAGE_BASE_LINK}")
+    private String BOOK_PAGE_BASE_LINK;
 
     private final BookRepository bookRepository;
     private final BookConverter bookConverter;
@@ -91,8 +92,10 @@ public class BookServiceImpl implements BookService {
             book.setEbook(eBookRepository.save(eBook));
         }
 
+        Book createdBook = bookRepository.save(book);
         sendNewFromFavoriteEmailNotification(book);
-        return bookConverter.of(bookRepository.save(book));
+
+        return bookConverter.of(createdBook);
     }
 
     @Override
@@ -172,22 +175,17 @@ public class BookServiceImpl implements BookService {
 
     private void sendNewFromFavoriteEmailNotification(Book book) throws MessagingException {
         Map<String, Object> mailContext = new HashMap<>();
-        boolean sendEmail = false;
         User recipient;
 
         for (Favorite item : favoriteRepository.findAll()){
             recipient = item.getCustomer();
-            if(item.getType().toString().equals("CATEGORY")){
-                sendEmail = bookCategoryRepository.findById(item.getEntityId()).get().equals(book.getCategory());
-            }
 
-            if (sendEmail) {
-                mailContext.put("username", recipient.getUsername());
-                mailContext.put("book", book.getTitle() + " " + book.getAuthor().getName() + book.getAuthor().getSurname());
+            mailContext.put("username", recipient.getUsername());
+            mailContext.put("book", book.getTitle() + " " + book.getAuthor().getName() + book.getAuthor().getSurname());
+            mailContext.put("link", BOOK_PAGE_BASE_LINK + book.getId() + "/details");
 
-                mailSender.sendEmail(recipient.getEmail(), "GoldenBook new book",
+            mailSender.sendEmail(recipient.getEmail(), "GoldenBook new book",
                         MailSenderImpl.MailType.NEW_AT_FAVORITE, mailContext);
-            }
         }
     }
 }
