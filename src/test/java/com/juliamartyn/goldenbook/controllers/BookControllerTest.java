@@ -120,7 +120,7 @@ public class BookControllerTest {
     public void findByIdWithRoleCustomer() throws Exception {
         mvc.perform(get("/api/books/1")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isOk());
     }
 
 

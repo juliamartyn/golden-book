@@ -61,7 +61,7 @@ public class BookController {
         return new ResponseEntity<>(bookService.findPageableBooks(pageNo, 10), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')  OR hasAuthority('ROLE_SELLER')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')  OR hasAuthority('ROLE_SELLER') OR hasAuthority('ROLE_CUSTOMER')")
     @GetMapping("/{id}")
     public ResponseEntity<BookResponse> findBookById(@PathVariable Integer id) {
         return new ResponseEntity<>(bookService.findBookById(id), HttpStatus.OK);
