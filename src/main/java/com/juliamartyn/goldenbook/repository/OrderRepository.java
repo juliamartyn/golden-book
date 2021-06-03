@@ -10,7 +10,6 @@ import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 
-
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
 
@@ -20,8 +19,11 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     @Query(value = "select * from orders where status_id != 1", nativeQuery = true)
     List<Order> findAllConfirmedOrders();
 
-    @Query(value = "select * from orders where status_id != 1 and buyer_id = :id", nativeQuery = true)
-    List<Order> findAllConfirmedOrdersByBuyerId(Long id);
+    @Query(value = "select * from orders where status_id != 1 and status_id != 4 and buyer_id = :id", nativeQuery = true)
+    List<Order> findAllActiveOrdersByBuyerId(Long id);
+
+    @Query(value = "select * from orders where status_id = 4 and buyer_id = :id", nativeQuery = true)
+    List<Order> findAllCompletedOrdersByBuyerId(Long id);
 
     @Query(value = "select * from orders where status_id = 5 and buyer_id = :id", nativeQuery = true)
     List<Order> findPreOrdersByBuyerId(Long id);

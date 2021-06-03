@@ -40,10 +40,17 @@ public class OrderController {
     }
 
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
-    @GetMapping("/current-user")
-    public ResponseEntity<List<OrderResponse>> buyerOrders(Authentication authentication) {
+    @GetMapping("/active")
+    public ResponseEntity<List<OrderResponse>> activeOrdersForCurrentUser(Authentication authentication) {
         UserPrinciple currentUser = (UserPrinciple) authentication.getPrincipal();
-        return new ResponseEntity<>(orderService.findOrdersByBuyerId(currentUser.getId()), HttpStatus.OK);
+        return new ResponseEntity<>(orderService.findActiveOrdersByBuyerId(currentUser.getId()), HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
+    @GetMapping("/completed")
+    public ResponseEntity<List<OrderResponse>> completedOrdersForCurrentUser(Authentication authentication) {
+        UserPrinciple currentUser = (UserPrinciple) authentication.getPrincipal();
+        return new ResponseEntity<>(orderService.findCompletedOrdersByBuyerId(currentUser.getId()), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")

@@ -36,6 +36,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService {
+    @Value("${ORDERS_PAGE_LINK}")
+    private String ORDERS_PAGE_LINK;
 
     @Value("${INVOICE_REPOSITORY}")
     private String invoiceRepository;
@@ -128,8 +130,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderResponse> findOrdersByBuyerId(Long buyerId) {
-        return orderRepository.findAllConfirmedOrdersByBuyerId(buyerId).stream()
+    public List<OrderResponse> findActiveOrdersByBuyerId(Long buyerId) {
+        return orderRepository.findAllActiveOrdersByBuyerId(buyerId).stream()
+                .map(orderConverter::of)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<OrderResponse> findCompletedOrdersByBuyerId(Long buyerId) {
+        return orderRepository.findAllCompletedOrdersByBuyerId(buyerId).stream()
                 .map(orderConverter::of)
                 .collect(Collectors.toList());
     }
@@ -267,6 +276,7 @@ public class OrderServiceImpl implements OrderService {
         mailContext.put("orderId", orderId);
         mailContext.put("status", order.getStatus().getName());
         mailContext.put("username", order.getBuyer().getUsername());
+        mailContext.put("link", ORDERS_PAGE_LINK);
 
         mailSender.sendEmail(order.getBuyer().getEmail(), "GoldenBook order",
                                 MailSenderImpl.MailType.ORDER_STATUS_UPDATE, mailContext);
@@ -279,6 +289,7 @@ public class OrderServiceImpl implements OrderService {
         mailContext.put("orderId", orderId);
         mailContext.put("attachmentFile", attachmentFile);
         mailContext.put("username", order.getBuyer().getUsername());
+        mailContext.put("link", ORDERS_PAGE_LINK);
 
         mailSender.sendEmail(order.getBuyer().getEmail(), "GoldenBook order confirmed",
                                 MailSenderImpl.MailType.ORDER_CONFIRMED, mailContext);

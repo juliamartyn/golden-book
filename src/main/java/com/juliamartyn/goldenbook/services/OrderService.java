@@ -13,7 +13,8 @@ public interface OrderService {
     void updateStatus(Integer id, String status) throws MessagingException;
     OrderResponse findOrderWithStatusSavedByBuyerId(Long id);
     List<OrderResponse> findAllConfirmedOrders();
-    List<OrderResponse> findOrdersByBuyerId(Long buyerId);
+    List<OrderResponse> findActiveOrdersByBuyerId(Long buyerId);
+    List<OrderResponse> findCompletedOrdersByBuyerId(Long buyerId);
     void deleteBookFromCart(Integer orderId, Integer bookId);
     void confirmOrder(Integer orderId) throws MessagingException, FileNotFoundException, JRException;
     void preOrder(Integer bookId, Long currentUserId);
