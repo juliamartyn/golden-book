@@ -241,7 +241,9 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findOrderById(orderId);
         Coupon coupon = couponRepository.findCouponById(couponId);
         order.setCoupon(coupon);
-        coupon.setUsed(true);
+        if(coupon.getType() == Coupon.CouponType.PERSONAL) {
+            coupon.setUsed(true);
+        }
 
         if(coupon.getBookQuantity() == null) {
             order.setTotalPrice(order.getTotalPrice()

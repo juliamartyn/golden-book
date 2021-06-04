@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CouponRequest {
+    private String type;
     private Integer discount;
     private LocalDate dueDate;
     private Integer bookQuantity;
